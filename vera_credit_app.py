@@ -142,14 +142,31 @@ st.markdown("""
         border: 1px solid #cccccc !important;
         border-radius: 20px !important;
         padding: 0.25rem 0.85rem !important;
-        color: #555555 !important;
         font-size: 0.83rem !important;
         cursor: pointer !important;
+    }
+    div[data-testid="stRadio"] label p {
+        color: #555555 !important;
+        margin: 0 !important;
     }
     div[data-testid="stRadio"] label:has(input:checked) {
         background: #111111 !important;
         border-color: #111111 !important;
+    }
+    div[data-testid="stRadio"] label:has(input:checked) p {
         color: #ffffff !important;
+    }
+    /* Greyed-out coming-soon nav items */
+    .nav-disabled {
+        display: inline-block;
+        background: #f8f8f8;
+        border: 1px solid #e0e0e0;
+        border-radius: 20px;
+        padding: 0.25rem 0.85rem;
+        font-size: 0.83rem;
+        color: #bbbbbb;
+        cursor: not-allowed;
+        margin: 0.1rem 0.175rem;
     }
 
     /* Metrics */
@@ -564,12 +581,20 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-page = st.radio(
-    "",
-    ["🏠 Brand Snapshot", "🐦 Twitter / X", "📺 YouTube", "📸 Instagram", "📘 Facebook", "💬 Reddit", "📰 News", "📊 Sigma Opportunity"],
-    horizontal=True,
-    label_visibility="collapsed",
-)
+col_nav, col_disabled = st.columns([7, 3])
+with col_nav:
+    page = st.radio(
+        "",
+        ["🏠 Brand Snapshot", "🐦 Twitter / X", "📺 YouTube", "💬 Reddit", "📰 News", "📊 Sigma Opportunity"],
+        horizontal=True,
+        label_visibility="collapsed",
+    )
+with col_disabled:
+    st.markdown(
+        '<span class="nav-disabled">📸 Instagram</span>'
+        '<span class="nav-disabled">📘 Facebook</span>',
+        unsafe_allow_html=True,
+    )
 
 st.markdown("---")
 
@@ -916,7 +941,8 @@ elif page == "💬 Reddit":
     st.caption("These conversations are happening right now. Vera is not part of any of them. This is a specific, actionable gap Sigma can help close with an audience intelligence model.")
 
     # Top upvoted topic posts
-    all_topic = pd.concat([df for df in topic_dfs.values() if not df.empty], ignore_index=True)
+    non_empty_topics = [df for df in topic_dfs.values() if not df.empty]
+    all_topic = pd.concat(non_empty_topics, ignore_index=True) if non_empty_topics else pd.DataFrame()
     if not all_topic.empty and "score" in all_topic.columns:
         st.markdown("### Top Upvoted Posts — Vera's Target Audience Expressing Exact Pain Points")
         top_posts = all_topic.nlargest(10, "score")[["title", "subreddit", "score", "num_comments", "url"]]
