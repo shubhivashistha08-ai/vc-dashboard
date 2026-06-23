@@ -7,6 +7,11 @@ import tweepy
 from googleapiclient.discovery import build
 import requests
 
+try:
+    from newsapi import NewsApiClient as _NewsApiClient
+except ImportError:
+    _NewsApiClient = None
+
 # ============================================
 # PAGE CONFIGURATION
 # ============================================
@@ -39,121 +44,127 @@ INSTAGRAM_BUSINESS_ACCOUNT_ID = get_secret("INSTAGRAM_BUSINESS_ACCOUNT_ID")
 # ============================================
 st.markdown("""
 <style>
-    /* Global */
-    .main .block-container { padding-top: 1.5rem; padding-bottom: 2rem; background: #ffffff; }
+    /* Force white background and black text in all modes */
+    html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"],
+    .main, .main .block-container, section[data-testid="stSidebar"] {
+        background-color: #ffffff !important;
+        color: #111111 !important;
+    }
+    .main .block-container { padding-top: 1.5rem; padding-bottom: 2rem; }
 
-    /* Hero header */
+    /* Hero */
     .vera-hero {
-        background: #0051BA;
-        border-radius: 12px;
-        padding: 2rem 2rem 1.6rem 2rem;
+        background: #111111;
+        border-radius: 8px;
+        padding: 1.8rem 2rem 1.5rem 2rem;
         margin-bottom: 1.5rem;
     }
-    .vera-hero h1 { font-size: 2rem; font-weight: 700; color: #ffffff; margin: 0 0 0.3rem 0; }
-    .vera-hero p { color: #cce0ff; font-size: 0.95rem; margin: 0; }
+    .vera-hero h1 { font-size: 1.9rem; font-weight: 700; color: #ffffff; margin: 0 0 0.3rem 0; }
+    .vera-hero p { color: #aaaaaa; font-size: 0.9rem; margin: 0; }
 
     /* Fact card */
     .fact-card {
-        background: #f4f8ff;
-        border: 1px solid #d0e2ff;
-        border-left: 4px solid #0051BA;
-        border-radius: 8px;
-        padding: 0.8rem 1rem;
-        margin-bottom: 0.5rem;
-    }
-    .fact-label { color: #0051BA; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
-    .fact-value { color: #1a1a2e; font-size: 0.95rem; font-weight: 500; margin-top: 2px; }
-
-    /* Competitor table */
-    .comp-row {
-        background: #f9fafb;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
+        background: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-left: 3px solid #111111;
+        border-radius: 4px;
         padding: 0.7rem 1rem;
         margin-bottom: 0.4rem;
+    }
+    .fact-label { color: #555555; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+    .fact-value { color: #111111; font-size: 0.92rem; font-weight: 500; margin-top: 2px; }
+
+    /* Competitor row */
+    .comp-row {
+        background: #f8f8f8;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        padding: 0.65rem 1rem;
+        margin-bottom: 0.35rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
-    .comp-name { color: #111827; font-weight: 600; font-size: 0.95rem; }
-    .comp-pos  { color: #6b7280; font-size: 0.85rem; }
+    .comp-name { color: #111111; font-weight: 600; font-size: 0.92rem; }
+    .comp-pos  { color: #555555; font-size: 0.82rem; }
 
-    /* Sigma opportunity cards */
+    /* Opportunity cards */
     .opp-card {
         background: #ffffff;
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 1.4rem 1.4rem 1.4rem 0;
-        margin-bottom: 1rem;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        padding: 1.2rem 1.2rem 1.2rem 0;
+        margin-bottom: 0.9rem;
         display: flex;
-        gap: 0;
-        box-shadow: 0 1px 4px rgba(0,81,186,0.06);
     }
-    .opp-number {
-        font-size: 2.4rem;
-        font-weight: 700;
-        color: #d0e2ff;
-        min-width: 75px;
-        text-align: center;
-        padding-top: 0.2rem;
-    }
+    .opp-number { font-size: 2.2rem; font-weight: 700; color: #cccccc; min-width: 70px; text-align: center; padding-top: 0.1rem; }
     .opp-body { flex: 1; }
-    .opp-evidence-label { color: #0051BA; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
-    .opp-evidence { color: #374151; font-size: 0.9rem; margin: 0.2rem 0 0.8rem 0; }
-    .opp-gap-label { color: #b45309; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
-    .opp-gap { color: #92400e; font-size: 0.9rem; margin: 0.2rem 0 0.8rem 0; }
+    .opp-evidence-label { color: #555555; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
+    .opp-evidence { color: #333333; font-size: 0.88rem; margin: 0.15rem 0 0.7rem 0; }
+    .opp-gap-label { color: #888888; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
+    .opp-gap { color: #555555; font-size: 0.88rem; margin: 0.15rem 0 0.7rem 0; }
     .opp-solution {
-        background: #f0fdf4;
-        border-left: 3px solid #16a34a;
-        border-radius: 0 8px 8px 0;
-        padding: 0.75rem 1rem;
-        margin-bottom: 0.6rem;
+        background: #f8f8f8;
+        border-left: 3px solid #111111;
+        border-radius: 0 4px 4px 0;
+        padding: 0.7rem 1rem;
+        margin-bottom: 0.5rem;
     }
-    .opp-solution-label { color: #16a34a; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
-    .opp-solution-text { color: #166534; font-size: 0.9rem; margin: 0.2rem 0 0 0; }
+    .opp-solution-label { color: #111111; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
+    .opp-solution-text { color: #333333; font-size: 0.88rem; margin: 0.15rem 0 0 0; }
     .opp-tag {
         display: inline-block;
-        background: #eff6ff;
-        color: #0051BA;
-        border: 1px solid #bfdbfe;
+        background: #ffffff;
+        color: #111111;
+        border: 1px solid #111111;
         border-radius: 20px;
-        padding: 0.2rem 0.8rem;
-        font-size: 0.76rem;
+        padding: 0.15rem 0.75rem;
+        font-size: 0.74rem;
         font-weight: 600;
         margin-top: 0.4rem;
     }
 
-    /* Alert / callout */
+    /* Callout */
     .callout-warning {
-        background: #fffbeb;
-        border: 1px solid #fcd34d;
-        border-left: 4px solid #f59e0b;
-        border-radius: 8px;
-        padding: 0.9rem 1.1rem;
-        color: #92400e;
-        font-size: 0.92rem;
+        background: #f8f8f8;
+        border: 1px solid #cccccc;
+        border-left: 3px solid #111111;
+        border-radius: 4px;
+        padding: 0.85rem 1rem;
+        color: #333333;
+        font-size: 0.9rem;
     }
 
-    /* Page nav */
-    div[data-testid="stRadio"] > div { flex-direction: row; gap: 0.4rem; flex-wrap: wrap; }
+    /* Nav pills */
+    div[data-testid="stRadio"] > div { flex-direction: row; gap: 0.35rem; flex-wrap: wrap; }
     div[data-testid="stRadio"] label {
-        background: #f1f5f9;
-        border: 1px solid #cbd5e1;
-        border-radius: 20px;
-        padding: 0.3rem 0.9rem;
-        color: #475569;
-        font-size: 0.85rem;
-        cursor: pointer;
+        background: #ffffff !important;
+        border: 1px solid #cccccc !important;
+        border-radius: 20px !important;
+        padding: 0.25rem 0.85rem !important;
+        color: #555555 !important;
+        font-size: 0.83rem !important;
+        cursor: pointer !important;
     }
     div[data-testid="stRadio"] label:has(input:checked) {
-        background: #0051BA;
-        border-color: #0051BA;
-        color: #ffffff;
+        background: #111111 !important;
+        border-color: #111111 !important;
+        color: #ffffff !important;
     }
-    .stMetric { background: #f4f8ff; border: 1px solid #d0e2ff; border-radius: 10px; padding: 0.8rem 1rem; }
-    .stMetric label { color: #0051BA !important; font-size: 0.78rem !important; font-weight: 600 !important; }
-    .stMetric [data-testid="stMetricValue"] { color: #111827 !important; font-size: 1.6rem !important; font-weight: 700 !important; }
-    hr { border-color: #e5e7eb; }
+
+    /* Metrics */
+    [data-testid="stMetric"] {
+        background: #f8f8f8 !important;
+        border: 1px solid #e0e0e0 !important;
+        border-radius: 6px !important;
+        padding: 0.8rem 1rem !important;
+    }
+    [data-testid="stMetric"] label { color: #555555 !important; font-size: 0.76rem !important; font-weight: 600 !important; }
+    [data-testid="stMetricValue"] { color: #111111 !important; font-size: 1.5rem !important; font-weight: 700 !important; }
+
+    /* Misc */
+    hr { border-color: #e0e0e0 !important; }
+    [data-testid="stDataFrame"] { border: 1px solid #e0e0e0; border-radius: 4px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -306,38 +317,49 @@ def fetch_twitter_data(query, bearer_token, max_results=100):
 def fetch_youtube_data(query, api_key, max_results=20):
     try:
         youtube = build("youtube", "v3", developerKey=api_key)
-        search = youtube.search().list(q=query, part="id,snippet", type="video", maxResults=max_results, order="viewCount").execute()
+        search = youtube.search().list(
+            q=query, part="id,snippet", type="video",
+            maxResults=max_results, order="viewCount"
+        ).execute()
         videos, comments = [], []
         for item in search.get("items", []):
-            vid = item["id"]["videoId"]
-            stats_r = youtube.videos().list(part="statistics,snippet", id=vid).execute()
-            if stats_r["items"]:
-                s = stats_r["items"][0]["statistics"]
-                sn = stats_r["items"][0]["snippet"]
-                videos.append({
-                    "video_id": vid,
-                    "title": sn["title"],
-                    "published_at": sn["publishedAt"],
-                    "view_count": int(s.get("viewCount", 0)),
-                    "like_count": int(s.get("likeCount", 0)),
-                    "comment_count": int(s.get("commentCount", 0)),
-                    "channel": sn.get("channelTitle", ""),
-                })
-                try:
-                    cr = youtube.commentThreads().list(part="snippet", videoId=vid, maxResults=20).execute()
-                    for ci in cr.get("items", []):
-                        c = ci["snippet"]["topLevelComment"]["snippet"]
-                        comments.append({
-                            "video_id": vid,
-                            "comment": c["textDisplay"],
-                            "like_count": c["likeCount"],
-                            "published_at": c["publishedAt"],
-                        })
-                except Exception:
-                    pass
+            vid = item.get("id", {}).get("videoId")
+            if not vid:
+                continue
+            try:
+                stats_r = youtube.videos().list(part="statistics,snippet", id=vid).execute()
+            except Exception:
+                continue
+            if not stats_r.get("items"):
+                continue
+            s = stats_r["items"][0].get("statistics", {})
+            sn = stats_r["items"][0].get("snippet", {})
+            videos.append({
+                "video_id": vid,
+                "title": sn.get("title", ""),
+                "published_at": sn.get("publishedAt", ""),
+                "view_count": int(s.get("viewCount") or 0),
+                "like_count": int(s.get("likeCount") or 0),
+                "comment_count": int(s.get("commentCount") or 0),
+                "channel": sn.get("channelTitle", ""),
+            })
+            try:
+                cr = youtube.commentThreads().list(
+                    part="snippet", videoId=vid, maxResults=20
+                ).execute()
+                for ci in cr.get("items", []):
+                    c = ci["snippet"]["topLevelComment"]["snippet"]
+                    comments.append({
+                        "video_id": vid,
+                        "comment": c.get("textDisplay", ""),
+                        "like_count": int(c.get("likeCount") or 0),
+                        "published_at": c.get("publishedAt", ""),
+                    })
+            except Exception:
+                pass
         return pd.DataFrame(videos), pd.DataFrame(comments)
     except Exception as e:
-        st.warning(f"YouTube API: {e}")
+        st.warning(f"YouTube API error: {e}")
         return pd.DataFrame(), pd.DataFrame()
 
 
@@ -350,41 +372,61 @@ def fetch_reddit_data(search_term, subreddits, limit=50):
         params = {"q": search_term, "sort": "new", "limit": limit, "t": "month"}
         try:
             r = requests.get(url, headers=headers, params=params, timeout=10)
+            if r.status_code != 200:
+                continue
             data = r.json()
             for post in data.get("data", {}).get("children", []):
-                p = post["data"]
+                p = post.get("data", {})
                 all_posts.append({
-                    "title": p.get("title"),
+                    "title": p.get("title", ""),
                     "selftext": p.get("selftext", ""),
-                    "score": p.get("score"),
-                    "num_comments": p.get("num_comments"),
+                    "score": int(p.get("score") or 0),
+                    "num_comments": int(p.get("num_comments") or 0),
                     "created_utc": p.get("created_utc"),
-                    "subreddit": p.get("subreddit"),
+                    "subreddit": p.get("subreddit", sub),
                     "url": "https://reddit.com" + p.get("permalink", ""),
-                    "upvote_ratio": p.get("upvote_ratio"),
+                    "upvote_ratio": float(p.get("upvote_ratio") or 0),
                 })
         except Exception as e:
             st.warning(f"Reddit fetch error for r/{sub}: {e}")
-    return pd.DataFrame(all_posts)
+    df = pd.DataFrame(all_posts)
+    if not df.empty:
+        df["score"] = pd.to_numeric(df["score"], errors="coerce").fillna(0).astype(int)
+        df["num_comments"] = pd.to_numeric(df["num_comments"], errors="coerce").fillna(0).astype(int)
+    return df
 
 
 @st.cache_data(ttl=3600)
 def fetch_news(query, api_key, days_back=30):
+    if _NewsApiClient is None:
+        st.warning("newsapi-python package not installed.")
+        return pd.DataFrame()
     try:
-        from newsapi import NewsApiClient
-        newsapi = NewsApiClient(api_key=api_key)
+        newsapi = _NewsApiClient(api_key=api_key)
         from_date = (datetime.now() - timedelta(days=days_back)).strftime("%Y-%m-%d")
-        results = newsapi.get_everything(q=query, from_param=from_date, language="en", sort_by="publishedAt", page_size=50)
+        results = newsapi.get_everything(
+            q=query, from_param=from_date, language="en",
+            sort_by="publishedAt", page_size=50
+        )
         articles = results.get("articles", [])
-        return pd.DataFrame([{
-            "title": a["title"],
-            "source": a["source"]["name"],
-            "published_at": a["publishedAt"],
-            "url": a["url"],
-            "description": a.get("description", ""),
-        } for a in articles if a.get("title")])
+        rows = []
+        for a in articles:
+            if not a.get("title") or a.get("title") == "[Removed]":
+                continue
+            rows.append({
+                "title": a["title"],
+                "source": (a.get("source") or {}).get("name", ""),
+                "published_at": a.get("publishedAt", ""),
+                "url": a.get("url", ""),
+                "description": a.get("description") or "",
+            })
+        df = pd.DataFrame(rows)
+        if not df.empty and "published_at" in df.columns:
+            df["published_at"] = pd.to_datetime(df["published_at"], errors="coerce")
+            df = df.sort_values("published_at", ascending=False)
+        return df
     except Exception as e:
-        st.warning(f"News API: {e}")
+        st.warning(f"News API error: {e}")
         return pd.DataFrame()
 
 
@@ -585,12 +627,12 @@ if page == "🏠 Brand Snapshot":
         size="Market Awareness",
         color="Digital-First Score",
         text="Brand",
-        color_continuous_scale="Blues",
+        color_continuous_scale="Greys",
         title="Competitive Positioning: Near-Prime Focus vs. Rewards Flexibility (bubble = brand awareness)",
         template="plotly_white",
     )
     fig.update_traces(textposition="top center")
-    fig.update_layout(height=480, paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc")
+    fig.update_layout(height=480, paper_bgcolor="#ffffff", plot_bgcolor="#ffffff")
     st.plotly_chart(fig, use_container_width=True)
     st.caption("Vera's product is uniquely positioned on rewards flexibility and digital-first — but its market awareness (bubble size) is near zero. That gap is the opportunity.")
 
@@ -668,7 +710,7 @@ elif page == "🐦 Twitter / X":
     # Side-by-side mention bar chart
     all_brands = {"Vera": vera_count, **comp_counts}
     bar_df = pd.DataFrame({"Brand": list(all_brands.keys()), "Mentions": list(all_brands.values())})
-    bar_df["Color"] = bar_df["Brand"].apply(lambda x: "#0051BA" if x == "Vera" else "#374151")
+    bar_df["Color"] = bar_df["Brand"].apply(lambda x: "#111111" if x == "Vera" else "#cccccc")
     fig_bar = go.Figure(go.Bar(
         x=bar_df["Brand"],
         y=bar_df["Mentions"],
@@ -678,7 +720,7 @@ elif page == "🐦 Twitter / X":
     ))
     fig_bar.update_layout(
         title="Twitter Mentions (Last 7 Days): Vera vs Competitors",
-        template="plotly_white", paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc",
+        template="plotly_white", paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
         height=380, showlegend=False,
     )
     st.plotly_chart(fig_bar, use_container_width=True)
@@ -703,8 +745,8 @@ elif page == "🐦 Twitter / X":
         fig_line = px.line(daily, x="date", y="mentions", markers=True,
                            title="Vera Mention Volume Over Time",
                            template="plotly_white")
-        fig_line.update_traces(line_color="#0051BA")
-        fig_line.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc", height=320)
+        fig_line.update_traces(line_color="#111111")
+        fig_line.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#ffffff", height=320)
         st.plotly_chart(fig_line, use_container_width=True)
 
     # Engagement table
@@ -729,7 +771,8 @@ elif page == "📺 YouTube":
         for q in YOUTUBE_VERA_QUERIES:
             vdf, _ = fetch_youtube_data(q, YOUTUBE_API_KEY, max_results=10)
             vera_vid_dfs.append(vdf)
-        vera_vids = pd.concat(vera_vid_dfs, ignore_index=True).drop_duplicates(subset=["video_id"]) if any(not d.empty for d in vera_vid_dfs) else pd.DataFrame()
+        non_empty = [d for d in vera_vid_dfs if not d.empty]
+        vera_vids = pd.concat(non_empty, ignore_index=True).drop_duplicates(subset=["video_id"]) if non_empty else pd.DataFrame()
 
         comp_vids = {}
         comp_comments = {}
@@ -748,7 +791,8 @@ elif page == "📺 YouTube":
         st.metric("Total Vera Views", f"{vera_views:,}")
     with col3:
         top_comp_vids = max(comp_vids, key=lambda n: len(comp_vids[n])) if comp_vids else "—"
-        st.metric(f"Competitor Videos ({top_comp_vids})", f"{len(comp_vids.get(top_comp_vids, [])):,}")
+        top_vids_count = len(comp_vids[top_comp_vids]) if top_comp_vids != "—" else 0
+        st.metric(f"Competitor Videos ({top_comp_vids})", f"{top_vids_count:,}")
     with col4:
         total_comp_views = sum(df["view_count"].sum() for df in comp_vids.values() if not df.empty)
         st.metric("Total Competitor Views", f"{total_comp_views:,}")
@@ -763,11 +807,11 @@ elif page == "📺 YouTube":
     for n, df in comp_vids.items():
         vid_compare[n] = len(df)
     vc_df = pd.DataFrame({"Brand": list(vid_compare.keys()), "Videos": list(vid_compare.values())})
-    vc_df["Color"] = vc_df["Brand"].apply(lambda x: "#0051BA" if x == "Vera" else "#374151")
+    vc_df["Color"] = vc_df["Brand"].apply(lambda x: "#111111" if x == "Vera" else "#cccccc")
     fig_vc = go.Figure(go.Bar(x=vc_df["Brand"], y=vc_df["Videos"],
                                marker_color=vc_df["Color"], text=vc_df["Videos"], textposition="outside"))
     fig_vc.update_layout(title="YouTube Video Count: Vera vs Competitors",
-                         template="plotly_white", paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc",
+                         template="plotly_white", paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
                          height=360, showlegend=False)
     st.plotly_chart(fig_vc, use_container_width=True)
     st.caption("Every competitor video is a touchpoint where a potential Vera customer is being influenced — without Vera in the room.")
@@ -777,11 +821,11 @@ elif page == "📺 YouTube":
     for n, df in comp_vids.items():
         view_compare[n] = int(df["view_count"].sum()) if not df.empty else 0
     vw_df = pd.DataFrame({"Brand": list(view_compare.keys()), "Views": list(view_compare.values())})
-    vw_df["Color"] = vw_df["Brand"].apply(lambda x: "#0051BA" if x == "Vera" else "#374151")
+    vw_df["Color"] = vw_df["Brand"].apply(lambda x: "#111111" if x == "Vera" else "#cccccc")
     fig_vw = go.Figure(go.Bar(x=vw_df["Brand"], y=vw_df["Views"],
                                marker_color=vw_df["Color"], text=vw_df["Views"], textposition="outside"))
     fig_vw.update_layout(title="Total YouTube Views: Vera vs Competitors",
-                         template="plotly_white", paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc",
+                         template="plotly_white", paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
                          height=360, showlegend=False)
     st.plotly_chart(fig_vw, use_container_width=True)
 
@@ -816,7 +860,8 @@ elif page == "💬 Reddit":
         for term in REDDIT_VERA_TERMS:
             df = fetch_reddit_data(term, SUBREDDITS, limit=50)
             vera_reddit_dfs.append(df)
-        vera_reddit = pd.concat(vera_reddit_dfs, ignore_index=True).drop_duplicates() if any(not d.empty for d in vera_reddit_dfs) else pd.DataFrame()
+        non_empty_r = [d for d in vera_reddit_dfs if not d.empty]
+        vera_reddit = pd.concat(non_empty_r, ignore_index=True).drop_duplicates(subset=["url"]) if non_empty_r else pd.DataFrame()
 
         topic_dfs = {}
         for term in REDDIT_TOPIC_TERMS:
@@ -853,7 +898,7 @@ elif page == "💬 Reddit":
     if heat_rows:
         heat_df = pd.DataFrame(heat_rows)
         heat_pivot = heat_df.pivot(index="Topic", columns="Subreddit", values="Posts").fillna(0)
-        fig_heat = px.imshow(heat_pivot, color_continuous_scale="Blues",
+        fig_heat = px.imshow(heat_pivot, color_continuous_scale="Greys",
                              title="Topic Conversation Heatmap — Subreddits Vera Should Own",
                              template="plotly_white")
         fig_heat.update_layout(paper_bgcolor="#ffffff", height=400)
@@ -864,10 +909,10 @@ elif page == "💬 Reddit":
     st.markdown("### Topic Post Volume — Vera's Audience Conversations")
     topic_bar_df = pd.DataFrame({"Topic": list(topic_totals.keys()), "Posts": list(topic_totals.values())})
     fig_topic = px.bar(topic_bar_df, x="Posts", y="Topic", orientation="h",
-                       color="Posts", color_continuous_scale="Blues",
+                       color="Posts", color_continuous_scale="Greys",
                        template="plotly_white",
                        title="Monthly Reddit Posts on Vera's Core Topics")
-    fig_topic.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc", height=380, showlegend=False)
+    fig_topic.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#ffffff", height=380, showlegend=False)
     st.plotly_chart(fig_topic, use_container_width=True)
     st.caption("These conversations are happening right now. Vera is not part of any of them. This is a specific, actionable gap Sigma can help close with an audience intelligence model.")
 
@@ -907,7 +952,10 @@ elif page == "📰 News":
         for q in NEWS_VERA_QUERIES:
             df = fetch_news(q, NEWS_API_KEY)
             vera_news_dfs.append(df)
-        vera_news = pd.concat(vera_news_dfs, ignore_index=True).drop_duplicates(subset=["title"]) if any(not d.empty for d in vera_news_dfs) else pd.DataFrame()
+        non_empty_n = [d for d in vera_news_dfs if not d.empty]
+        vera_news = pd.concat(non_empty_n, ignore_index=True)
+        if not vera_news.empty and "title" in vera_news.columns:
+            vera_news = vera_news.drop_duplicates(subset=["title"])
 
         comp_news = {}
         for name, q in NEWS_COMPETITOR_QUERIES.items():
@@ -932,11 +980,11 @@ elif page == "📰 News":
     # Coverage comparison
     all_brands_news = {"Vera": vera_news_count, **comp_news_counts}
     news_df = pd.DataFrame({"Brand": list(all_brands_news.keys()), "Articles": list(all_brands_news.values())})
-    news_df["Color"] = news_df["Brand"].apply(lambda x: "#0051BA" if x == "Vera" else "#374151")
+    news_df["Color"] = news_df["Brand"].apply(lambda x: "#111111" if x == "Vera" else "#cccccc")
     fig_news = go.Figure(go.Bar(x=news_df["Brand"], y=news_df["Articles"],
                                  marker_color=news_df["Color"], text=news_df["Articles"], textposition="outside"))
     fig_news.update_layout(title="Press Coverage (30 days): Vera vs Competitors",
-                           template="plotly_white", paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc",
+                           template="plotly_white", paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
                            height=360, showlegend=False)
     st.plotly_chart(fig_news, use_container_width=True)
     st.caption("This gap in press coverage directly translates to missing organic discovery at the moment of purchase intent.")
@@ -949,9 +997,9 @@ elif page == "📰 News":
         source_counts = vera_news["source_clean"].value_counts().reset_index()
         source_counts.columns = ["Source", "Articles"]
         fig_src = px.bar(source_counts.head(15), x="Articles", y="Source", orientation="h",
-                         color="Articles", color_continuous_scale="Blues", template="plotly_white",
+                         color="Articles", color_continuous_scale="Greys", template="plotly_white",
                          title="Vera Press Articles by Source")
-        fig_src.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc", height=400, showlegend=False)
+        fig_src.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#ffffff", height=400, showlegend=False)
         st.plotly_chart(fig_src, use_container_width=True)
 
         st.markdown("### Vera Articles")
@@ -962,7 +1010,8 @@ elif page == "📰 News":
     all_comp_news = pd.concat([df.assign(brand=n) for n, df in comp_news.items() if not df.empty], ignore_index=True)
     if not all_comp_news.empty:
         st.markdown("### Competitor Coverage — What Vera's Customers Are Reading Instead")
-        top_comp_articles = all_comp_news.nlargest(10, "published_at")[["title", "brand", "source", "published_at", "url"]]
+        all_comp_news["published_at"] = pd.to_datetime(all_comp_news["published_at"], errors="coerce")
+        top_comp_articles = all_comp_news.sort_values("published_at", ascending=False).head(10)[["title", "brand", "source", "published_at", "url"]]
         for _, row in top_comp_articles.iterrows():
             st.markdown(f"- **[{row['title']}]({row['url']})** ({row['brand']}) — {row['source']}")
         st.caption("These articles appear when Vera's customers search for 'best credit card no annual fee' or 'digital credit card review.' Vera is not in any of them.")
@@ -1004,7 +1053,7 @@ elif page == "📸 Instagram":
             ))
             fig.update_layout(title="Estimated Hashtag Posts (Static Reference Data)",
                               template="plotly_white", paper_bgcolor="#ffffff",
-                              plot_bgcolor="#f8fafc", height=360, showlegend=False)
+                              plot_bgcolor="#ffffff", height=360, showlegend=False)
             st.plotly_chart(fig, use_container_width=True)
         with col2:
             fig2 = go.Figure(go.Bar(
@@ -1014,7 +1063,7 @@ elif page == "📸 Instagram":
             ))
             fig2.update_layout(title="Instagram Followers — Competitor Accounts (Approx.)",
                                template="plotly_white", paper_bgcolor="#ffffff",
-                               plot_bgcolor="#f8fafc", height=360, showlegend=False)
+                               plot_bgcolor="#ffffff", height=360, showlegend=False)
             st.plotly_chart(fig2, use_container_width=True)
         st.caption("Static reference figures. Connect Meta API to get live data. The story is the same either way: Vera is invisible on Instagram.")
     else:
@@ -1058,11 +1107,11 @@ elif page == "📸 Instagram":
         # Mention comparison bar
         all_ig = {"Vera": vera_ig_count, **comp_ig_counts}
         ig_bar = pd.DataFrame({"Brand": list(all_ig.keys()), "Posts": list(all_ig.values())})
-        ig_bar["Color"] = ig_bar["Brand"].apply(lambda x: "#0051BA" if x == "Vera" else "#374151")
+        ig_bar["Color"] = ig_bar["Brand"].apply(lambda x: "#111111" if x == "Vera" else "#cccccc")
         fig_ig = go.Figure(go.Bar(x=ig_bar["Brand"], y=ig_bar["Posts"],
                                    marker_color=ig_bar["Color"], text=ig_bar["Posts"], textposition="outside"))
         fig_ig.update_layout(title="Instagram Hashtag Posts (Recent): Vera vs Competitors",
-                              template="plotly_white", paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc",
+                              template="plotly_white", paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
                               height=360, showlegend=False)
         st.plotly_chart(fig_ig, use_container_width=True)
         st.caption("Each competitor post is a consumer recommendation or review reaching thousands of Vera's potential customers — without Vera in the conversation.")
@@ -1072,9 +1121,9 @@ elif page == "📸 Instagram":
         topic_df = pd.DataFrame({"Hashtag": [f"#{t}" for t in topic_counts.keys()],
                                   "Posts": list(topic_counts.values())})
         fig_topic = px.bar(topic_df, x="Posts", y="Hashtag", orientation="h",
-                           color="Posts", color_continuous_scale="Blues", template="plotly_white",
+                           color="Posts", color_continuous_scale="Greys", template="plotly_white",
                            title="Topic Hashtag Volume — Vera's Audience Conversations on Instagram")
-        fig_topic.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc", height=360, showlegend=False)
+        fig_topic.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#ffffff", height=360, showlegend=False)
         st.plotly_chart(fig_topic, use_container_width=True)
         st.caption("These topic hashtags are the conversations Vera's target customers are already having. Vera needs to be discoverable within them.")
 
@@ -1128,7 +1177,7 @@ elif page == "📘 Facebook":
             ))
             fig.update_layout(title="Facebook Page Followers — Competitor Reference Data",
                               template="plotly_white", paper_bgcolor="#ffffff",
-                              plot_bgcolor="#f8fafc", height=360, showlegend=False)
+                              plot_bgcolor="#ffffff", height=360, showlegend=False)
             st.plotly_chart(fig, use_container_width=True)
         with col2:
             fig2 = go.Figure(go.Bar(
@@ -1138,7 +1187,7 @@ elif page == "📘 Facebook":
             ))
             fig2.update_layout(title="Avg. Post Engagement per Post (Approx.)",
                                template="plotly_white", paper_bgcolor="#ffffff",
-                               plot_bgcolor="#f8fafc", height=360, showlegend=False)
+                               plot_bgcolor="#ffffff", height=360, showlegend=False)
             st.plotly_chart(fig2, use_container_width=True)
         st.caption("Static reference figures. Connect Meta API to pull live page metrics.")
     else:
@@ -1154,11 +1203,11 @@ elif page == "📘 Facebook":
         fan_data = {n: m.get("fans", 0) for n, m in comp_fb_meta.items() if m}
         fan_data["Vera"] = 0
         fan_df = pd.DataFrame({"Brand": list(fan_data.keys()), "Followers": list(fan_data.values())})
-        fan_df["Color"] = fan_df["Brand"].apply(lambda x: "#0051BA" if x == "Vera" else "#374151")
+        fan_df["Color"] = fan_df["Brand"].apply(lambda x: "#111111" if x == "Vera" else "#cccccc")
         fig_fan = go.Figure(go.Bar(x=fan_df["Brand"], y=fan_df["Followers"],
                                     marker_color=fan_df["Color"], text=fan_df["Followers"], textposition="outside"))
         fig_fan.update_layout(title="Facebook Page Followers: Vera vs Competitors",
-                               template="plotly_white", paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc",
+                               template="plotly_white", paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
                                height=360, showlegend=False)
         st.plotly_chart(fig_fan, use_container_width=True)
         st.caption("Vera has no Facebook Page. Every competitor follower is a potential Vera customer being nurtured by the competition.")
@@ -1168,10 +1217,10 @@ elif page == "📘 Facebook":
         if any(v > 0 for v in talking_data.values()):
             talk_df = pd.DataFrame({"Brand": list(talking_data.keys()), "Talking About (7d)": list(talking_data.values())})
             fig_talk = px.bar(talk_df, x="Brand", y="Talking About (7d)",
-                              color="Talking About (7d)", color_continuous_scale="Reds",
+                              color="Talking About (7d)", color_continuous_scale="Greys",
                               template="plotly_white",
                               title="'Talking About' Count — Active Audience Engagement This Week")
-            fig_talk.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc", height=340, showlegend=False)
+            fig_talk.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#ffffff", height=340, showlegend=False)
             st.plotly_chart(fig_talk, use_container_width=True)
             st.caption("'Talking About' measures how many unique people interacted with a Page in the last 7 days. It is a proxy for active brand awareness Vera has zero of.")
 
@@ -1183,9 +1232,9 @@ elif page == "📘 Facebook":
             avg_eng = all_comp_fb.groupby("brand")["total_engagement"].mean().reset_index()
             avg_eng.columns = ["Brand", "Avg Engagement per Post"]
             fig_eng = px.bar(avg_eng, x="Brand", y="Avg Engagement per Post",
-                             color="Avg Engagement per Post", color_continuous_scale="Blues",
+                             color="Avg Engagement per Post", color_continuous_scale="Greys",
                              template="plotly_white", title="Average Post Engagement by Competitor")
-            fig_eng.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc", height=340, showlegend=False)
+            fig_eng.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#ffffff", height=340, showlegend=False)
             st.plotly_chart(fig_eng, use_container_width=True)
 
             # Sentiment on competitor posts
@@ -1195,7 +1244,7 @@ elif page == "📘 Facebook":
                               color_discrete_map={"Positive": "#00c853", "Neutral": "#5a7ab5", "Negative": "#e53935"},
                               template="plotly_white", barmode="stack",
                               title="Competitor Post Sentiment — What Emotions Are Driving Engagement?")
-            fig_sent.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc", height=360)
+            fig_sent.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#ffffff", height=360)
             st.plotly_chart(fig_sent, use_container_width=True)
             st.caption("Understanding what emotional content drives engagement for competitors tells Vera exactly what content tone and message to lead with.")
 
@@ -1216,11 +1265,11 @@ elif page == "📊 Sigma Opportunity":
     st.info("**What this page is telling you:** The data from every previous page points to a specific, measurable set of gaps. Each gap maps directly to a Sigma AI capability. This is the evidence-based case for engagement.")
 
     st.markdown("""
-    <div style="background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid #0051BA; border-radius:10px; padding:1.4rem 1.8rem; margin-bottom:1.5rem;">
-      <div style="color:#0051BA; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.1em; font-weight:700;">The Thesis</div>
-      <div style="color:#1e3a5f; font-size:1.1rem; margin-top:0.5rem; line-height:1.7;">
+    <div style="background:#f8f8f8; border:1px solid #e0e0e0; border-left:3px solid #111111; border-radius:4px; padding:1.2rem 1.6rem; margin-bottom:1.4rem;">
+      <div style="color:#555555; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.1em; font-weight:700;">The Thesis</div>
+      <div style="color:#111111; font-size:1.05rem; margin-top:0.5rem; line-height:1.7;">
         Vera has a differentiated product, an experienced team, and a well-defined target market.
-        What it lacks is the <strong style="color:#0051BA;">measurement infrastructure and analytical models</strong>
+        What it lacks is the <strong>measurement infrastructure and analytical models</strong>
         to find those customers, understand them, convert them, and learn from them at scale.
         That is precisely what Sigma AI builds.
       </div>
@@ -1252,16 +1301,16 @@ elif page == "📊 Sigma Opportunity":
     service_counts = pd.Series(services).value_counts().reset_index()
     service_counts.columns = ["Service", "Count"]
     fig_svc = px.bar(service_counts, x="Count", y="Service", orientation="h",
-                     color="Count", color_continuous_scale="Blues", template="plotly_white",
+                     color="Count", color_continuous_scale="Greys", template="plotly_white",
                      title="Sigma Capabilities Required to Close Vera's Gaps")
-    fig_svc.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc", height=320, showlegend=False)
+    fig_svc.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#ffffff", height=320, showlegend=False)
     st.plotly_chart(fig_svc, use_container_width=True)
 
     # What we are NOT proposing
     st.markdown("""
-    <div style="background:#fff7ed; border:1px solid #fed7aa; border-left:4px solid #f59e0b; border-radius:10px; padding:1.4rem 1.8rem; margin-top:1.5rem;">
-      <div style="color:#92400e; font-size:1rem; font-weight:700; margin-bottom:0.8rem;">What Sigma is NOT proposing</div>
-      <ul style="color:#78350f; line-height:2; margin:0; padding-left:1.2rem;">
+    <div style="background:#f8f8f8; border:1px solid #e0e0e0; border-radius:4px; padding:1.2rem 1.6rem; margin-top:1.4rem;">
+      <div style="color:#111111; font-size:0.95rem; font-weight:700; margin-bottom:0.7rem;">What Sigma is NOT proposing</div>
+      <ul style="color:#333333; line-height:1.9; margin:0; padding-left:1.2rem;">
         <li>We are <strong>not</strong> proposing to run Vera's social media.</li>
         <li>We are <strong>not</strong> a marketing agency.</li>
         <li>We <strong>build the measurement infrastructure and analytical models</strong>
