@@ -1214,7 +1214,7 @@ elif page == "📰 News":
 # PAGE 6 — INSTAGRAM
 # ============================================
 elif page == "📸 Instagram":
-    st.info("**What this page is telling you:** Instagram is where fintech brands build aspirational identity and reach consumers aged 25–40 — exactly Vera's demographic. Vera has zero Instagram presence. Competitor hashtags generate thousands of posts per month. Every post is a card application Vera didn't get.")
+    st.info("Instagram is where fintech brands build aspirational identity and reach consumers aged 25–40 — exactly Vera's demographic. Vera has zero Instagram presence. Competitor hashtags generate thousands of posts per month. Every post is a card application Vera didn't get.")
 
     if not META_ACCESS_TOKEN or not INSTAGRAM_BUSINESS_ACCOUNT_ID:
         st.warning("META_ACCESS_TOKEN and INSTAGRAM_BUSINESS_ACCOUNT_ID are not set.")
@@ -1342,7 +1342,7 @@ elif page == "📸 Instagram":
 # PAGE 7 — FACEBOOK
 # ============================================
 elif page == "📘 Facebook":
-    st.info("**What this page is telling you:** Facebook Pages are where credit card brands post offers, updates, and build community trust with older millennial and Gen X consumers. Vera has no Facebook presence. Competitor pages have tens of thousands of followers actively engaging with card offers and reviews.")
+    st.info("Facebook Pages are where credit card brands post offers, updates, and build community trust with older millennial and Gen X consumers. Vera has no Facebook presence. Competitor pages have tens of thousands of followers actively engaging with card offers and reviews.")
 
     if not META_ACCESS_TOKEN:
         st.warning("META_ACCESS_TOKEN is not set.")
