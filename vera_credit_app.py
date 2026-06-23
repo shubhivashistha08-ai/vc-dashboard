@@ -1520,35 +1520,6 @@ elif page == "🌐 Growth Signals":
                 top_regions = region_df.sort_values(region_df.columns[1], ascending=False).head(10)
                 st.dataframe(top_regions, use_container_width=True)
 
-    # ── Wayback Machine ────────────────────────────────────────────────────────
-    st.markdown("---")
-    st.markdown("## 🗃️ Web Archive — vera.credit")
-
-    with st.spinner("Checking Wayback Machine for vera.credit…"):
-        wb = fetch_wayback_info(WAYBACK_DOMAIN)
-
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.metric("Domain First Archived", wb["first_seen"] or "Not yet indexed")
-    with col2:
-        st.metric("Total Archive Snapshots", f"~{wb['snapshot_pages'] * 50:,}" if wb["snapshot_pages"] else "< 50")
-    with col3:
-        st.metric("Snapshots (Last 90 Days)", f"{len(wb['recent_snapshots']):,}")
-
-    if wb["recent_snapshots"]:
-        snap_df = pd.DataFrame({"date": wb["recent_snapshots"]})
-        snap_df["week"] = pd.to_datetime(snap_df["date"]).dt.to_period("W").dt.start_time
-        weekly_snaps = snap_df.groupby("week").size().reset_index(name="crawls")
-        fig_snaps = px.bar(weekly_snaps, x="week", y="crawls", template="plotly_white",
-                           title="Wayback Machine Crawl Frequency — vera.credit (Last 90 Days)",
-                           color_discrete_sequence=["#111111"])
-        fig_snaps.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#ffffff", height=300)
-        st.plotly_chart(fig_snaps, use_container_width=True)
-    else:
-        st.markdown('<div class="callout-warning">🔍 <strong>No recent snapshots</strong> — vera.credit is not yet generating enough content for bots to crawl regularly. Near-zero SEO authority.</div>', unsafe_allow_html=True)
-
-    st.markdown(f"[Browse vera.credit on Wayback Machine →](https://web.archive.org/web/*/{WAYBACK_DOMAIN})")
-
     # ── App Store ──────────────────────────────────────────────────────────────
     st.markdown("---")
     st.markdown("## 📱 App Store — iOS")
