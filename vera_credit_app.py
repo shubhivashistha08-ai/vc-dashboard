@@ -39,127 +39,121 @@ INSTAGRAM_BUSINESS_ACCOUNT_ID = get_secret("INSTAGRAM_BUSINESS_ACCOUNT_ID")
 # ============================================
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
-
     /* Global */
-    .main .block-container { padding-top: 1.5rem; padding-bottom: 2rem; }
+    .main .block-container { padding-top: 1.5rem; padding-bottom: 2rem; background: #ffffff; }
 
     /* Hero header */
     .vera-hero {
-        background: linear-gradient(135deg, #0a0f1e 0%, #0d1b3e 60%, #0a1628 100%);
-        border-radius: 16px;
-        padding: 2.5rem 2rem 2rem 2rem;
+        background: #0051BA;
+        border-radius: 12px;
+        padding: 2rem 2rem 1.6rem 2rem;
         margin-bottom: 1.5rem;
-        border: 1px solid #1a2a4a;
     }
-    .vera-hero h1 {
-        font-family: 'Fraunces', Georgia, serif;
-        font-size: 2.4rem;
-        color: #e8f0ff;
-        margin: 0 0 0.3rem 0;
-    }
-    .vera-hero p { color: #8aa0c8; font-size: 1rem; margin: 0; }
+    .vera-hero h1 { font-size: 2rem; font-weight: 700; color: #ffffff; margin: 0 0 0.3rem 0; }
+    .vera-hero p { color: #cce0ff; font-size: 0.95rem; margin: 0; }
 
     /* Fact card */
     .fact-card {
-        background: #0d1b3e;
-        border: 1px solid #1a2a4a;
-        border-radius: 12px;
-        padding: 1rem 1.2rem;
-        margin-bottom: 0.6rem;
+        background: #f4f8ff;
+        border: 1px solid #d0e2ff;
+        border-left: 4px solid #0051BA;
+        border-radius: 8px;
+        padding: 0.8rem 1rem;
+        margin-bottom: 0.5rem;
     }
-    .fact-label { color: #5a7ab5; font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-    .fact-value { color: #e0eaff; font-size: 1rem; font-weight: 500; margin-top: 2px; }
+    .fact-label { color: #0051BA; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+    .fact-value { color: #1a1a2e; font-size: 0.95rem; font-weight: 500; margin-top: 2px; }
 
     /* Competitor table */
     .comp-row {
-        background: #0d1b3e;
-        border: 1px solid #1a2a4a;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
         border-radius: 8px;
-        padding: 0.8rem 1rem;
+        padding: 0.7rem 1rem;
         margin-bottom: 0.4rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
-    .comp-name { color: #c8d8f0; font-weight: 600; }
-    .comp-pos  { color: #6a8ab5; font-size: 0.88rem; }
+    .comp-name { color: #111827; font-weight: 600; font-size: 0.95rem; }
+    .comp-pos  { color: #6b7280; font-size: 0.85rem; }
 
     /* Sigma opportunity cards */
     .opp-card {
-        background: #0a0f1e;
-        border: 1px solid #1a2a4a;
-        border-radius: 14px;
-        padding: 1.5rem 1.5rem 1.5rem 0;
-        margin-bottom: 1.2rem;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 1.4rem 1.4rem 1.4rem 0;
+        margin-bottom: 1rem;
         display: flex;
         gap: 0;
+        box-shadow: 0 1px 4px rgba(0,81,186,0.06);
     }
     .opp-number {
-        font-family: 'Fraunces', serif;
-        font-size: 2.8rem;
-        color: #1a3a6e;
-        min-width: 80px;
+        font-size: 2.4rem;
+        font-weight: 700;
+        color: #d0e2ff;
+        min-width: 75px;
         text-align: center;
         padding-top: 0.2rem;
     }
     .opp-body { flex: 1; }
-    .opp-evidence-label { color: #4a6a9a; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
-    .opp-evidence { color: #8aa0c8; font-size: 0.9rem; margin: 0.2rem 0 0.8rem 0; }
-    .opp-gap-label { color: #8a4a4a; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
-    .opp-gap { color: #c89090; font-size: 0.9rem; margin: 0.2rem 0 0.8rem 0; }
+    .opp-evidence-label { color: #0051BA; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
+    .opp-evidence { color: #374151; font-size: 0.9rem; margin: 0.2rem 0 0.8rem 0; }
+    .opp-gap-label { color: #b45309; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
+    .opp-gap { color: #92400e; font-size: 0.9rem; margin: 0.2rem 0 0.8rem 0; }
     .opp-solution {
-        background: #061a0e;
-        border-left: 3px solid #00c853;
+        background: #f0fdf4;
+        border-left: 3px solid #16a34a;
         border-radius: 0 8px 8px 0;
-        padding: 0.8rem 1rem;
+        padding: 0.75rem 1rem;
         margin-bottom: 0.6rem;
     }
-    .opp-solution-label { color: #00c853; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
-    .opp-solution-text { color: #b0d8b8; font-size: 0.9rem; margin: 0.2rem 0 0 0; }
+    .opp-solution-label { color: #16a34a; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
+    .opp-solution-text { color: #166534; font-size: 0.9rem; margin: 0.2rem 0 0 0; }
     .opp-tag {
         display: inline-block;
-        background: #0d2a4e;
-        color: #5a9af0;
+        background: #eff6ff;
+        color: #0051BA;
+        border: 1px solid #bfdbfe;
         border-radius: 20px;
         padding: 0.2rem 0.8rem;
-        font-size: 0.78rem;
+        font-size: 0.76rem;
         font-weight: 600;
-        margin-top: 0.5rem;
+        margin-top: 0.4rem;
     }
 
     /* Alert / callout */
     .callout-warning {
-        background: #1a0e00;
-        border: 1px solid #7a4a00;
+        background: #fffbeb;
+        border: 1px solid #fcd34d;
         border-left: 4px solid #f59e0b;
         border-radius: 8px;
-        padding: 1rem 1.2rem;
-        color: #f0c060;
-        font-size: 0.95rem;
+        padding: 0.9rem 1.1rem;
+        color: #92400e;
+        font-size: 0.92rem;
     }
 
     /* Page nav */
-    div[data-testid="stRadio"] > div { flex-direction: row; gap: 0.5rem; }
+    div[data-testid="stRadio"] > div { flex-direction: row; gap: 0.4rem; flex-wrap: wrap; }
     div[data-testid="stRadio"] label {
-        background: #0d1b3e;
-        border: 1px solid #1a2a4a;
+        background: #f1f5f9;
+        border: 1px solid #cbd5e1;
         border-radius: 20px;
         padding: 0.3rem 0.9rem;
-        color: #8aa0c8;
-        font-size: 0.88rem;
+        color: #475569;
+        font-size: 0.85rem;
         cursor: pointer;
     }
     div[data-testid="stRadio"] label:has(input:checked) {
         background: #0051BA;
         border-color: #0051BA;
-        color: #fff;
+        color: #ffffff;
     }
-    .stMetric { background: #0d1b3e; border: 1px solid #1a2a4a; border-radius: 10px; padding: 0.8rem 1rem; }
-    .stMetric label { color: #6a8ab5 !important; font-size: 0.8rem !important; }
-    .stMetric [data-testid="stMetricValue"] { color: #e0eaff !important; font-size: 1.6rem !important; }
-    hr { border-color: #1a2a4a; }
-    .stInfo { background: #051428; border-color: #0a3060; color: #8ab0e0; }
+    .stMetric { background: #f4f8ff; border: 1px solid #d0e2ff; border-radius: 10px; padding: 0.8rem 1rem; }
+    .stMetric label { color: #0051BA !important; font-size: 0.78rem !important; font-weight: 600 !important; }
+    .stMetric [data-testid="stMetricValue"] { color: #111827 !important; font-size: 1.6rem !important; font-weight: 700 !important; }
+    hr { border-color: #e5e7eb; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -524,7 +518,7 @@ def empty_vera_warning():
 # ============================================
 st.markdown("""
 <div class="vera-hero">
-  <h1>💳 Vera Credit · Social Intelligence Dashboard</h1>
+  <h1>💳 Vera Credit &nbsp;·&nbsp; Social Intelligence Dashboard</h1>
   <p>Sigma AI Analytics &nbsp;·&nbsp; Pre-Call Preparation &nbsp;·&nbsp; June 2026</p>
 </div>
 """, unsafe_allow_html=True)
@@ -593,10 +587,10 @@ if page == "🏠 Brand Snapshot":
         text="Brand",
         color_continuous_scale="Blues",
         title="Competitive Positioning: Near-Prime Focus vs. Rewards Flexibility (bubble = brand awareness)",
-        template="plotly_dark",
+        template="plotly_white",
     )
     fig.update_traces(textposition="top center")
-    fig.update_layout(height=480, paper_bgcolor="#0a0f1e", plot_bgcolor="#0a0f1e")
+    fig.update_layout(height=480, paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc")
     st.plotly_chart(fig, use_container_width=True)
     st.caption("Vera's product is uniquely positioned on rewards flexibility and digital-first — but its market awareness (bubble size) is near zero. That gap is the opportunity.")
 
@@ -684,7 +678,7 @@ elif page == "🐦 Twitter / X":
     ))
     fig_bar.update_layout(
         title="Twitter Mentions (Last 7 Days): Vera vs Competitors",
-        template="plotly_dark", paper_bgcolor="#0a0f1e", plot_bgcolor="#0a0f1e",
+        template="plotly_white", paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc",
         height=380, showlegend=False,
     )
     st.plotly_chart(fig_bar, use_container_width=True)
@@ -698,8 +692,8 @@ elif page == "🐦 Twitter / X":
         color_map = {"Positive": "#00c853", "Neutral": "#5a7ab5", "Negative": "#e53935"}
         fig_sent = px.pie(sent_counts, values="Count", names="Sentiment",
                           color="Sentiment", color_discrete_map=color_map,
-                          hole=0.4, template="plotly_dark")
-        fig_sent.update_layout(paper_bgcolor="#0a0f1e", height=340)
+                          hole=0.4, template="plotly_white")
+        fig_sent.update_layout(paper_bgcolor="#ffffff", height=340)
         st.plotly_chart(fig_sent, use_container_width=True)
 
     # Timeline
@@ -708,9 +702,9 @@ elif page == "🐦 Twitter / X":
         daily = vera_tw.groupby("date").size().reset_index(name="mentions")
         fig_line = px.line(daily, x="date", y="mentions", markers=True,
                            title="Vera Mention Volume Over Time",
-                           template="plotly_dark")
+                           template="plotly_white")
         fig_line.update_traces(line_color="#0051BA")
-        fig_line.update_layout(paper_bgcolor="#0a0f1e", plot_bgcolor="#0a0f1e", height=320)
+        fig_line.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc", height=320)
         st.plotly_chart(fig_line, use_container_width=True)
 
     # Engagement table
@@ -773,7 +767,7 @@ elif page == "📺 YouTube":
     fig_vc = go.Figure(go.Bar(x=vc_df["Brand"], y=vc_df["Videos"],
                                marker_color=vc_df["Color"], text=vc_df["Videos"], textposition="outside"))
     fig_vc.update_layout(title="YouTube Video Count: Vera vs Competitors",
-                         template="plotly_dark", paper_bgcolor="#0a0f1e", plot_bgcolor="#0a0f1e",
+                         template="plotly_white", paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc",
                          height=360, showlegend=False)
     st.plotly_chart(fig_vc, use_container_width=True)
     st.caption("Every competitor video is a touchpoint where a potential Vera customer is being influenced — without Vera in the room.")
@@ -787,7 +781,7 @@ elif page == "📺 YouTube":
     fig_vw = go.Figure(go.Bar(x=vw_df["Brand"], y=vw_df["Views"],
                                marker_color=vw_df["Color"], text=vw_df["Views"], textposition="outside"))
     fig_vw.update_layout(title="Total YouTube Views: Vera vs Competitors",
-                         template="plotly_dark", paper_bgcolor="#0a0f1e", plot_bgcolor="#0a0f1e",
+                         template="plotly_white", paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc",
                          height=360, showlegend=False)
     st.plotly_chart(fig_vw, use_container_width=True)
 
@@ -861,8 +855,8 @@ elif page == "💬 Reddit":
         heat_pivot = heat_df.pivot(index="Topic", columns="Subreddit", values="Posts").fillna(0)
         fig_heat = px.imshow(heat_pivot, color_continuous_scale="Blues",
                              title="Topic Conversation Heatmap — Subreddits Vera Should Own",
-                             template="plotly_dark")
-        fig_heat.update_layout(paper_bgcolor="#0a0f1e", height=400)
+                             template="plotly_white")
+        fig_heat.update_layout(paper_bgcolor="#ffffff", height=400)
         st.plotly_chart(fig_heat, use_container_width=True)
         st.caption("Each cell is a concentration of Vera's target customers discussing the problems Vera solves. Vera has zero posts in any of these communities.")
 
@@ -871,9 +865,9 @@ elif page == "💬 Reddit":
     topic_bar_df = pd.DataFrame({"Topic": list(topic_totals.keys()), "Posts": list(topic_totals.values())})
     fig_topic = px.bar(topic_bar_df, x="Posts", y="Topic", orientation="h",
                        color="Posts", color_continuous_scale="Blues",
-                       template="plotly_dark",
+                       template="plotly_white",
                        title="Monthly Reddit Posts on Vera's Core Topics")
-    fig_topic.update_layout(paper_bgcolor="#0a0f1e", plot_bgcolor="#0a0f1e", height=380, showlegend=False)
+    fig_topic.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc", height=380, showlegend=False)
     st.plotly_chart(fig_topic, use_container_width=True)
     st.caption("These conversations are happening right now. Vera is not part of any of them. This is a specific, actionable gap Sigma can help close with an audience intelligence model.")
 
@@ -942,7 +936,7 @@ elif page == "📰 News":
     fig_news = go.Figure(go.Bar(x=news_df["Brand"], y=news_df["Articles"],
                                  marker_color=news_df["Color"], text=news_df["Articles"], textposition="outside"))
     fig_news.update_layout(title="Press Coverage (30 days): Vera vs Competitors",
-                           template="plotly_dark", paper_bgcolor="#0a0f1e", plot_bgcolor="#0a0f1e",
+                           template="plotly_white", paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc",
                            height=360, showlegend=False)
     st.plotly_chart(fig_news, use_container_width=True)
     st.caption("This gap in press coverage directly translates to missing organic discovery at the moment of purchase intent.")
@@ -955,9 +949,9 @@ elif page == "📰 News":
         source_counts = vera_news["source_clean"].value_counts().reset_index()
         source_counts.columns = ["Source", "Articles"]
         fig_src = px.bar(source_counts.head(15), x="Articles", y="Source", orientation="h",
-                         color="Articles", color_continuous_scale="Blues", template="plotly_dark",
+                         color="Articles", color_continuous_scale="Blues", template="plotly_white",
                          title="Vera Press Articles by Source")
-        fig_src.update_layout(paper_bgcolor="#0a0f1e", plot_bgcolor="#0a0f1e", height=400, showlegend=False)
+        fig_src.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc", height=400, showlegend=False)
         st.plotly_chart(fig_src, use_container_width=True)
 
         st.markdown("### Vera Articles")
@@ -1009,8 +1003,8 @@ elif page == "📸 Instagram":
                 text=static_data["Est. Hashtag Posts"], textposition="outside",
             ))
             fig.update_layout(title="Estimated Hashtag Posts (Static Reference Data)",
-                              template="plotly_dark", paper_bgcolor="#0a0f1e",
-                              plot_bgcolor="#0a0f1e", height=360, showlegend=False)
+                              template="plotly_white", paper_bgcolor="#ffffff",
+                              plot_bgcolor="#f8fafc", height=360, showlegend=False)
             st.plotly_chart(fig, use_container_width=True)
         with col2:
             fig2 = go.Figure(go.Bar(
@@ -1019,8 +1013,8 @@ elif page == "📸 Instagram":
                 text=static_data["Followers (approx)"], textposition="outside",
             ))
             fig2.update_layout(title="Instagram Followers — Competitor Accounts (Approx.)",
-                               template="plotly_dark", paper_bgcolor="#0a0f1e",
-                               plot_bgcolor="#0a0f1e", height=360, showlegend=False)
+                               template="plotly_white", paper_bgcolor="#ffffff",
+                               plot_bgcolor="#f8fafc", height=360, showlegend=False)
             st.plotly_chart(fig2, use_container_width=True)
         st.caption("Static reference figures. Connect Meta API to get live data. The story is the same either way: Vera is invisible on Instagram.")
     else:
@@ -1068,7 +1062,7 @@ elif page == "📸 Instagram":
         fig_ig = go.Figure(go.Bar(x=ig_bar["Brand"], y=ig_bar["Posts"],
                                    marker_color=ig_bar["Color"], text=ig_bar["Posts"], textposition="outside"))
         fig_ig.update_layout(title="Instagram Hashtag Posts (Recent): Vera vs Competitors",
-                              template="plotly_dark", paper_bgcolor="#0a0f1e", plot_bgcolor="#0a0f1e",
+                              template="plotly_white", paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc",
                               height=360, showlegend=False)
         st.plotly_chart(fig_ig, use_container_width=True)
         st.caption("Each competitor post is a consumer recommendation or review reaching thousands of Vera's potential customers — without Vera in the conversation.")
@@ -1078,9 +1072,9 @@ elif page == "📸 Instagram":
         topic_df = pd.DataFrame({"Hashtag": [f"#{t}" for t in topic_counts.keys()],
                                   "Posts": list(topic_counts.values())})
         fig_topic = px.bar(topic_df, x="Posts", y="Hashtag", orientation="h",
-                           color="Posts", color_continuous_scale="Blues", template="plotly_dark",
+                           color="Posts", color_continuous_scale="Blues", template="plotly_white",
                            title="Topic Hashtag Volume — Vera's Audience Conversations on Instagram")
-        fig_topic.update_layout(paper_bgcolor="#0a0f1e", plot_bgcolor="#0a0f1e", height=360, showlegend=False)
+        fig_topic.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc", height=360, showlegend=False)
         st.plotly_chart(fig_topic, use_container_width=True)
         st.caption("These topic hashtags are the conversations Vera's target customers are already having. Vera needs to be discoverable within them.")
 
@@ -1133,8 +1127,8 @@ elif page == "📘 Facebook":
                 text=static_fb["Est. Page Followers"], textposition="outside",
             ))
             fig.update_layout(title="Facebook Page Followers — Competitor Reference Data",
-                              template="plotly_dark", paper_bgcolor="#0a0f1e",
-                              plot_bgcolor="#0a0f1e", height=360, showlegend=False)
+                              template="plotly_white", paper_bgcolor="#ffffff",
+                              plot_bgcolor="#f8fafc", height=360, showlegend=False)
             st.plotly_chart(fig, use_container_width=True)
         with col2:
             fig2 = go.Figure(go.Bar(
@@ -1143,8 +1137,8 @@ elif page == "📘 Facebook":
                 text=static_fb["Avg. Post Engagement"], textposition="outside",
             ))
             fig2.update_layout(title="Avg. Post Engagement per Post (Approx.)",
-                               template="plotly_dark", paper_bgcolor="#0a0f1e",
-                               plot_bgcolor="#0a0f1e", height=360, showlegend=False)
+                               template="plotly_white", paper_bgcolor="#ffffff",
+                               plot_bgcolor="#f8fafc", height=360, showlegend=False)
             st.plotly_chart(fig2, use_container_width=True)
         st.caption("Static reference figures. Connect Meta API to pull live page metrics.")
     else:
@@ -1164,7 +1158,7 @@ elif page == "📘 Facebook":
         fig_fan = go.Figure(go.Bar(x=fan_df["Brand"], y=fan_df["Followers"],
                                     marker_color=fan_df["Color"], text=fan_df["Followers"], textposition="outside"))
         fig_fan.update_layout(title="Facebook Page Followers: Vera vs Competitors",
-                               template="plotly_dark", paper_bgcolor="#0a0f1e", plot_bgcolor="#0a0f1e",
+                               template="plotly_white", paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc",
                                height=360, showlegend=False)
         st.plotly_chart(fig_fan, use_container_width=True)
         st.caption("Vera has no Facebook Page. Every competitor follower is a potential Vera customer being nurtured by the competition.")
@@ -1175,9 +1169,9 @@ elif page == "📘 Facebook":
             talk_df = pd.DataFrame({"Brand": list(talking_data.keys()), "Talking About (7d)": list(talking_data.values())})
             fig_talk = px.bar(talk_df, x="Brand", y="Talking About (7d)",
                               color="Talking About (7d)", color_continuous_scale="Reds",
-                              template="plotly_dark",
+                              template="plotly_white",
                               title="'Talking About' Count — Active Audience Engagement This Week")
-            fig_talk.update_layout(paper_bgcolor="#0a0f1e", plot_bgcolor="#0a0f1e", height=340, showlegend=False)
+            fig_talk.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc", height=340, showlegend=False)
             st.plotly_chart(fig_talk, use_container_width=True)
             st.caption("'Talking About' measures how many unique people interacted with a Page in the last 7 days. It is a proxy for active brand awareness Vera has zero of.")
 
@@ -1190,8 +1184,8 @@ elif page == "📘 Facebook":
             avg_eng.columns = ["Brand", "Avg Engagement per Post"]
             fig_eng = px.bar(avg_eng, x="Brand", y="Avg Engagement per Post",
                              color="Avg Engagement per Post", color_continuous_scale="Blues",
-                             template="plotly_dark", title="Average Post Engagement by Competitor")
-            fig_eng.update_layout(paper_bgcolor="#0a0f1e", plot_bgcolor="#0a0f1e", height=340, showlegend=False)
+                             template="plotly_white", title="Average Post Engagement by Competitor")
+            fig_eng.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc", height=340, showlegend=False)
             st.plotly_chart(fig_eng, use_container_width=True)
 
             # Sentiment on competitor posts
@@ -1199,9 +1193,9 @@ elif page == "📘 Facebook":
             sent_breakdown = all_comp_fb.groupby(["brand", "sentiment"]).size().reset_index(name="count")
             fig_sent = px.bar(sent_breakdown, x="brand", y="count", color="sentiment",
                               color_discrete_map={"Positive": "#00c853", "Neutral": "#5a7ab5", "Negative": "#e53935"},
-                              template="plotly_dark", barmode="stack",
+                              template="plotly_white", barmode="stack",
                               title="Competitor Post Sentiment — What Emotions Are Driving Engagement?")
-            fig_sent.update_layout(paper_bgcolor="#0a0f1e", plot_bgcolor="#0a0f1e", height=360)
+            fig_sent.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc", height=360)
             st.plotly_chart(fig_sent, use_container_width=True)
             st.caption("Understanding what emotional content drives engagement for competitors tells Vera exactly what content tone and message to lead with.")
 
@@ -1222,11 +1216,11 @@ elif page == "📊 Sigma Opportunity":
     st.info("**What this page is telling you:** The data from every previous page points to a specific, measurable set of gaps. Each gap maps directly to a Sigma AI capability. This is the evidence-based case for engagement.")
 
     st.markdown("""
-    <div style="background:#0a0f1e; border:1px solid #1a2a4a; border-radius:14px; padding:1.5rem 2rem; margin-bottom:1.5rem;">
-      <div style="font-family: 'Fraunces', serif; color:#5a9af0; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.1em;">The Thesis</div>
-      <div style="color:#e0eaff; font-size:1.15rem; margin-top:0.5rem; line-height:1.6;">
+    <div style="background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid #0051BA; border-radius:10px; padding:1.4rem 1.8rem; margin-bottom:1.5rem;">
+      <div style="color:#0051BA; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.1em; font-weight:700;">The Thesis</div>
+      <div style="color:#1e3a5f; font-size:1.1rem; margin-top:0.5rem; line-height:1.7;">
         Vera has a differentiated product, an experienced team, and a well-defined target market.
-        What it lacks is the <strong style="color:#5a9af0;">measurement infrastructure and analytical models</strong>
+        What it lacks is the <strong style="color:#0051BA;">measurement infrastructure and analytical models</strong>
         to find those customers, understand them, convert them, and learn from them at scale.
         That is precisely what Sigma AI builds.
       </div>
@@ -1258,23 +1252,22 @@ elif page == "📊 Sigma Opportunity":
     service_counts = pd.Series(services).value_counts().reset_index()
     service_counts.columns = ["Service", "Count"]
     fig_svc = px.bar(service_counts, x="Count", y="Service", orientation="h",
-                     color="Count", color_continuous_scale="Blues", template="plotly_dark",
+                     color="Count", color_continuous_scale="Blues", template="plotly_white",
                      title="Sigma Capabilities Required to Close Vera's Gaps")
-    fig_svc.update_layout(paper_bgcolor="#0a0f1e", plot_bgcolor="#0a0f1e", height=320, showlegend=False)
+    fig_svc.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#f8fafc", height=320, showlegend=False)
     st.plotly_chart(fig_svc, use_container_width=True)
 
     # What we are NOT proposing
     st.markdown("""
-    <div style="background:#0a0f1e; border:1px solid #1a2a4a; border-radius:14px; padding:1.5rem 2rem; margin-top:1.5rem;">
-      <div style="font-family: 'Fraunces', serif; color:#f59e0b; font-size:1.1rem; margin-bottom:0.8rem;">What Sigma is NOT proposing</div>
-      <ul style="color:#8aa0c8; line-height:2;">
-        <li>We are <strong style="color:#e0eaff;">not</strong> proposing to run Vera's social media.</li>
-        <li>We are <strong style="color:#e0eaff;">not</strong> a marketing agency.</li>
-        <li>We <strong style="color:#e0eaff;">build the measurement infrastructure and analytical models</strong>
+    <div style="background:#fff7ed; border:1px solid #fed7aa; border-left:4px solid #f59e0b; border-radius:10px; padding:1.4rem 1.8rem; margin-top:1.5rem;">
+      <div style="color:#92400e; font-size:1rem; font-weight:700; margin-bottom:0.8rem;">What Sigma is NOT proposing</div>
+      <ul style="color:#78350f; line-height:2; margin:0; padding-left:1.2rem;">
+        <li>We are <strong>not</strong> proposing to run Vera's social media.</li>
+        <li>We are <strong>not</strong> a marketing agency.</li>
+        <li>We <strong>build the measurement infrastructure and analytical models</strong>
             that tell Vera what is working and what is not — so the Vera team can make faster,
             better decisions with less wasted spend.</li>
-        <li>We work as Vera's <strong style="color:#e0eaff;">embedded data science team</strong>,
-            not a hands-off vendor.</li>
+        <li>We work as Vera's <strong>embedded data science team</strong>, not a hands-off vendor.</li>
       </ul>
     </div>
     """, unsafe_allow_html=True)
