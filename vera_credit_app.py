@@ -625,7 +625,7 @@ def render_insights(points):
     <div style="background:#f8f8f8; border:1px solid #e0e0e0; border-left:4px solid #111111;
                 border-radius:4px; padding:0.9rem 1.2rem; margin:0.8rem 0 1.2rem 0;">
       <div style="color:#555555; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.1em;
-                  font-weight:700; margin-bottom:0.5rem;">📋 Key Insights for the Call</div>
+                  font-weight:700; margin-bottom:0.5rem;">📋 Key Insights</div>
       <ul style="margin:0; padding-left:1.2rem; color:#111111; line-height:1.85; font-size:0.9rem;">
         {bullets}
       </ul>
