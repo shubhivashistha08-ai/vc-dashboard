@@ -199,17 +199,20 @@ st.markdown("""
 # STATIC DATA
 # ============================================
 VERA_FACTS = {
+    "Website": "vera.credit",
     "Founded": "2025",
-    "HQ": "Fairfax, Virginia / Cleveland, OH (legal)",
-    "Stage": "Early-stage, invite-only waitlist",
+    "HQ": "Fairfax, Virginia / Cleveland, OH (legal entity)",
+    "Stage": "Invite-only waitlist",
     "CEO": "Sandeep Sachdeva (18 yrs Capital One)",
-    "Card type": "Unsecured consumer credit card — Visa / World Mastercard",
+    "Card Network": "Visa / World Mastercard",
     "BIN Sponsor": "FinWise Bank (NASDAQ: FINW)",
     "Card Processor": "Zeta",
-    "Target segment": "Prime and near-prime US consumers",
-    "Differentiator": "Customer-chosen rewards (3 modes), no annual fee, digital-first",
+    "Target Segment": "Prime and near-prime US consumers",
+    "Rewards": "3 modes, customer-chosen: Cash Back · Travel · Gas & Retail",
+    "Annual Fee": "None",
+    "Foreign Transaction Fee": "None",
     "Employees": "1–10",
-    "Status": "Waitlist / invite-only as of June 2026",
+    "Status": "Waitlist / invite-only · June 2026",
 }
 
 COMPETITORS = [
@@ -224,44 +227,44 @@ COMPETITORS = [
 SIGMA_OPPORTUNITIES = [
     {
         "number": "01",
-        "evidence": "Near-zero social mentions across Twitter, YouTube, Reddit, Google News, and News API — confirmed using exact-phrase queries (e.g. \"vera credit card\", \"vera.credit\") designed to eliminate false positives. Zero results under tight search is itself the signal.",
-        "gap": "No baseline exists. Vera cannot currently measure brand growth or share-of-voice against competitors.",
-        "sigma_solution": "Build a real-time brand monitoring pipeline — mention tracking, sentiment scoring, share-of-voice vs competitors, weekly cadence. Vera's team gets a live dashboard, not a spreadsheet.",
+        "evidence": "Zero social mentions across Twitter, YouTube, Reddit, Google News, and News API — confirmed with exact-phrase queries to eliminate false positives.",
+        "gap": "No baseline. Vera cannot measure brand growth or share-of-voice against competitors.",
+        "sigma_solution": "Real-time brand monitoring pipeline: mention tracking, sentiment scoring, weekly share-of-voice vs competitors. Live dashboard, not a spreadsheet.",
         "sigma_service": "BI & Decision Dashboards + Data Engineering",
     },
     {
         "number": "02",
-        "evidence": "r/CreditCards and r/personalfinance have hundreds of monthly posts from Vera's exact target audience discussing the precise pain points Vera solves — confirmed via subreddit-restricted searches. Zero posts mention Vera specifically.",
-        "gap": "Vera has no intelligence on where its customers are or what they're saying. No channel attribution is possible at this stage.",
-        "sigma_solution": "Audience intelligence model: identify high-value subreddits, content clusters, and conversation triggers. Map them to Vera's acquisition funnel. Output: a prioritised list of where to show up first.",
+        "evidence": "Hundreds of monthly posts in r/CreditCards and r/personalfinance from Vera's target audience. Zero mention Vera.",
+        "gap": "No intelligence on where customers are or what they're saying. No channel attribution possible.",
+        "sigma_solution": "Audience intelligence model: map high-value subreddits and conversation triggers to Vera's acquisition funnel. Output: ranked list of where to show up first.",
         "sigma_service": "Predictive Analytics + Marketing Mix Modelling",
     },
     {
         "number": "03",
-        "evidence": "YouTube searches for \"vera credit card\" (exact phrase) return competitor review content, not Vera. The review ecosystem for Vera's rivals generates 50k–500k view videos. Vera has zero dedicated video coverage.",
-        "gap": "No content or SEO strategy. Vera will lose organic search and social discovery to Petal, Apple Card, and Upgrade who already have content ecosystems.",
-        "sigma_solution": "Content opportunity model: keyword and topic gap analysis against competitors. Which search terms and Reddit threads should Vera own? What content assets earn the most qualified traffic?",
+        "evidence": "YouTube searches for \"vera credit card\" return competitor content — 50k–500k view videos. Vera has zero dedicated coverage.",
+        "gap": "No content or SEO strategy. Petal, Apple Card, and Upgrade already own the search and social discovery.",
+        "sigma_solution": "Content opportunity model: keyword and topic gap analysis against competitors. Identify the search terms and Reddit threads Vera should own.",
         "sigma_service": "AI Strategy + Predictive Analytics",
     },
     {
         "number": "04",
-        "evidence": "Vera is invite-only / waitlist. Conversion from waitlist to active cardholder is a critical funnel to optimise before scaling acquisition spend.",
-        "gap": "No data infrastructure to measure waitlist-to-activation conversion, identify drop-off points, or model which applicant cohorts activate fastest.",
-        "sigma_solution": "Build the measurement foundation now — before spend scales. Waitlist funnel model, cohort analysis, activation prediction. Same approach as Project Purpose: connect the spend to the outcome before the money is committed.",
+        "evidence": "Vera is invite-only / waitlist. Waitlist-to-cardholder conversion is the critical funnel before scaling spend.",
+        "gap": "No infrastructure to measure conversion, identify drop-off points, or model which cohorts activate fastest.",
+        "sigma_solution": "Waitlist funnel model, cohort analysis, activation prediction — built before spend scales so every dollar is measurable.",
         "sigma_service": "MLOps + Data Engineering",
     },
     {
         "number": "05",
-        "evidence": "Vera's CEO background (Capital One, 18 years) means the team understands rigorous analytics — but with 1–10 employees, there is no internal data science capacity.",
-        "gap": "The analytics sophistication required to compete in the credit card market far exceeds what an early-stage team can build in-house.",
-        "sigma_solution": "Sigma acts as Vera's external data science and analytics team — not a vendor that hands off deliverables. Ongoing ownership of models and measurement, built to scale with Vera as it grows from waitlist to national card program.",
+        "evidence": "CEO background: 18 years Capital One. Team size: 1–10. No internal data science capacity.",
+        "gap": "Analytics sophistication required to compete in credit far exceeds what an early-stage team can build alone.",
+        "sigma_solution": "Sigma as Vera's embedded data science team — ongoing model ownership and measurement, built to scale from waitlist to national program.",
         "sigma_service": "Full lifecycle: MLOps + Analytics + Strategy",
     },
     {
         "number": "06",
-        "evidence": "Google Trends shows zero measurable search interest for 'vera credit card'. No iOS app listed. Wayback Machine crawl frequency is near zero. TikTok and YouTube have zero dedicated Vera content. All six public growth signals are at baseline.",
-        "gap": "Vera has no early-warning system to detect when the brand starts gaining traction — or when a competitor gains at their expense. Growth will be invisible until it's too late to amplify or counter it.",
-        "sigma_solution": "Weekly growth signal tracker: Google Trends alerts, Reddit velocity monitoring, App Store review tracking, TikTok hashtag crawl, Wayback crawl frequency, and Google News RSS — all in a single automated report delivered to Vera's team every Monday.",
+        "evidence": "Google Trends: zero. iOS App Store: not listed. Wayback crawls: near zero. TikTok, YouTube, Reddit: all at baseline.",
+        "gap": "No early-warning system. Growth — or competitive threat — will be invisible until it's too late to act.",
+        "sigma_solution": "Weekly growth signal tracker: Trends alerts, Reddit velocity, App Store reviews, TikTok hashtag crawl, Wayback frequency, Google News — one automated report every Monday.",
         "sigma_service": "BI & Decision Dashboards + Data Engineering",
     },
 ]
@@ -781,28 +784,15 @@ def call_insights(points):
 
 
 def search_methodology_note(queries, platform="this platform"):
-    query_list = " &nbsp;·&nbsp; ".join(f"<code>{q}</code>" for q in queries)
-    st.markdown(f"""
-    <div style="background:#f5f5f5; border:1px solid #e0e0e0; border-left:3px solid #888888;
-                border-radius:4px; padding:0.7rem 1.1rem; margin:0.6rem 0 1rem 0; font-size:0.82rem; color:#555555;">
-      <strong>Search methodology:</strong> Results for {platform} use exact-phrase keyword searches to minimise false positives:
-      {query_list}.<br>
-      These are targeted queries — not broad crawls. A brand genuinely absent from the conversation
-      will return few or zero results, which is itself a measurable signal.
-    </div>
-    """, unsafe_allow_html=True)
+    with st.expander("Search methodology", expanded=False):
+        st.caption(f"Exact-phrase queries on {platform}: " + " · ".join(f"`{q}`" for q in queries) + ". Zero results for a pre-launch brand are expected — the absence is the signal.")
 
 
 def empty_vera_warning():
     st.markdown("""
     <div class="callout-warning">
-    🔍 <strong>Zero (or near-zero) Vera results — this is the finding, not a data error.</strong><br><br>
-    These searches use exact and near-exact keyword matching (e.g. <code>"vera credit card"</code>,
-    <code>"vera.credit"</code>) specifically designed to reduce false positives. A pre-launch brand
-    genuinely absent from the conversation will return zero results under tight queries — and that
-    absence is precisely what we are documenting.<br><br>
-    <em>Note: keyword searches cannot capture every possible mention (paraphrases, screenshots, spoken references),
-    so this represents a lower-bound estimate. The true footprint is unlikely to be materially higher.</em>
+    🔍 <strong>Zero Vera results — confirmed absence, not a data gap.</strong>
+    Exact-phrase queries are designed to avoid false positives. Near-zero results for a pre-launch brand are expected and are themselves the finding.
     </div>
     """, unsafe_allow_html=True)
 
@@ -837,14 +827,10 @@ st.markdown("---")
 # PAGE 1 — BRAND SNAPSHOT
 # ============================================
 if page == "🏠 Brand Snapshot":
-    st.info("**What this page is telling you:** Vera is a brand-new, invite-only credit card with a differentiated product and an experienced CEO — but zero measurable social or data infrastructure. The competitive landscape is well-established. The window to own brand voice is now.")
     call_insights([
-        "<strong>First-mover window is closing:</strong> Vera owns a unique positioning (rewards-flexible, digital-first, near-prime) but zero brand awareness — the longer this gap stays open, a funded competitor fills it.",
-        "<strong>No analytics stack = flying blind:</strong> Vera cannot currently measure what acquisition channels work, which customer segments convert, or what messaging resonates.",
-        "<strong>Zero results are a deliberate finding:</strong> All searches use exact-phrase queries (e.g. <code>\"vera credit card\"</code>, <code>\"vera.credit\"</code>) to avoid false positives. Near-zero results across Twitter, YouTube, Reddit, and News are not a data gap — they confirm an absence of brand footprint.",
-        "<strong>Competitors are well-established:</strong> Petal, Apple Card, Tomo all have review ecosystems, press coverage, and social communities already feeding their funnels.",
-        "<strong>Where Sigma helps:</strong> Build the measurement foundation — brand monitoring, acquisition attribution, and an audience intelligence model — so Vera can move fast with data instead of gut feel.",
-        "<strong>Opening question for the call:</strong> <em>'How are you currently measuring which channels bring in your best customers?'</em> — the answer will reveal the analytics gap.",
+        "<strong>First-mover window:</strong> Unique positioning (rewards-flexible, digital-first, near-prime) but zero brand awareness — every month without data, a funded competitor closes the gap.",
+        "<strong>Competitors are established:</strong> Petal, Apple Card, Tomo already have review ecosystems, press coverage, and social communities feeding their funnels. Vera has none.",
+        "<strong>Opening question:</strong> <em>'How are you currently measuring which channels bring in your best customers?'</em>",
     ])
 
     col_l, col_r = st.columns([1.1, 1])
@@ -872,9 +858,7 @@ if page == "🏠 Brand Snapshot":
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("""
         <div class="callout-warning">
-        🚨 <strong>What Vera does NOT yet have:</strong><br>
-        Any measurable social media presence or data infrastructure. Zero share-of-voice.
-        Zero content footprint. No analytics stack to measure what is or isn't working.
+        🚨 <strong>Zero social presence. Zero analytics stack. Zero content footprint.</strong>
         </div>
         """, unsafe_allow_html=True)
 
@@ -901,22 +885,13 @@ if page == "🏠 Brand Snapshot":
     fig.update_traces(textposition="top center")
     fig.update_layout(height=480, paper_bgcolor="#ffffff", plot_bgcolor="#ffffff")
     st.plotly_chart(fig, use_container_width=True)
-    st.caption("Vera's product is uniquely positioned on rewards flexibility and digital-first — but its market awareness (bubble size) is near zero. That gap is the opportunity.")
+    st.caption("Bubble size = brand awareness. Vera's product is best-in-class on both axes — but the bubble is nearly invisible.")
 
 
 # ============================================
 # PAGE 2 — TWITTER / X
 # ============================================
 elif page == "🐦 Twitter / X":
-    st.info("**What this page is telling you:** Vera has essentially zero Twitter presence. Competitors are generating thousands of mentions per week from Vera's exact target customers. This is both a risk and a concrete, fixable opportunity.")
-    call_insights([
-        "<strong>Share-of-voice gap:</strong> Competitors generate thousands of mentions weekly from exactly the audience Vera is targeting — near-prime, digital-first millennials discussing credit.",
-        "<strong>No brand defence:</strong> When a customer tweets a complaint or question about Vera, there is nobody listening or responding — a trust signal that matters enormously for a financial product.",
-        "<strong>Competitor sentiment is mixed:</strong> Petal and Tomo regularly attract negative tweets about approval rates and customer service — a direct opening Vera could exploit with a response strategy.",
-        "<strong>Where Sigma helps:</strong> Deploy a real-time social listening model that surfaces high-intent mentions, routes alerts, and tracks sentiment shifts — so Vera's team can act within hours, not days.",
-        "<strong>Talking point:</strong> <em>'Your competitors are losing customers publicly on Twitter and no one is catching them. We can build you a system that catches those moments in real time.'</em>",
-    ])
-
     st.markdown("---")
     st.markdown("""
     <div style="background:#f8f8f8; border:1px solid #e0e0e0; border-radius:8px; padding:2.5rem 2rem; text-align:center; margin:1.5rem 0;">
@@ -957,15 +932,7 @@ elif page == "🐦 Twitter / X":
 # PAGE 3 — YOUTUBE
 # ============================================
 elif page == "📺 YouTube":
-    st.info("**What this page is telling you:** Vera has zero YouTube presence. The competitor review ecosystem generates 50k–500k view videos. These viewers are Vera's exact target customers, actively researching credit cards at the moment of decision — and Vera is invisible to them.")
-    call_insights([
-        "<strong>Decision-moment invisibility:</strong> 'Best credit card for bad credit' and 'no annual fee card review' videos collectively pull millions of views — Vera does not appear in any of them.",
-        "<strong>Content blueprint already exists:</strong> Top competitor video titles reveal exactly what Vera's audience wants to watch. Vera doesn't need to guess — it needs to execute.",
-        "<strong>Competitor pain points are documented:</strong> Negative comments on Petal and Tomo videos are verbatim the problems Vera's product is designed to solve — free, unfiltered customer research.",
-        "<strong>Where Sigma helps:</strong> Topic modelling on competitor comment sections to extract the top 10 pain points, map them to Vera's features, and brief a content strategy — actionable in 2 weeks.",
-        "<strong>Talking point:</strong> <em>'We can mine 50k competitor video comments to give you the exact script for your first 5 videos — content that's already proven to resonate.'</em>",
-    ])
-
+    st.info("Vera has zero YouTube presence. Competitor review videos pull 50k–500k views from Vera's exact target customers at the moment of card research.")
     search_methodology_note(YOUTUBE_VERA_QUERIES, "YouTube")
 
     if not YOUTUBE_API_KEY:
@@ -1020,7 +987,6 @@ elif page == "📺 YouTube":
                          template="plotly_white", paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
                          height=360, showlegend=False)
     st.plotly_chart(fig_vc, use_container_width=True)
-    st.caption("Every competitor video is a touchpoint where a potential Vera customer is being influenced — without Vera in the room.")
 
     # View count comparison
     view_compare = {"Vera": vera_views}
@@ -1041,7 +1007,6 @@ elif page == "📺 YouTube":
         st.markdown("### Top Competitor Videos (by views)")
         top10 = all_comp_vids.nlargest(10, "view_count")[["title", "brand", "view_count", "like_count", "comment_count"]]
         st.dataframe(top10, use_container_width=True)
-        st.caption("These titles reveal what content resonates with Vera's target audience. They are the content blueprint Vera should own — but doesn't yet.")
 
     # Comment sentiment on competitor videos
     all_comp_comments = pd.concat([df for df in comp_comments.values() if not df.empty], ignore_index=True)
@@ -1052,22 +1017,13 @@ elif page == "📺 YouTube":
         if not neg_comments.empty:
             for _, row in neg_comments.iterrows():
                 st.markdown(f"> ❌ _{row['comment'][:200]}_")
-        st.caption("These are the exact frustrations Vera's product is designed to solve. Vera should be the answer in these comment sections.")
 
 
 # ============================================
 # PAGE 4 — REDDIT
 # ============================================
 elif page == "💬 Reddit":
-    st.info("**What this page is telling you:** Hundreds of posts per month from Vera's exact target customers, on the exact subreddits Vera should be engaging with, discussing the precise problems Vera solves. Vera is not mentioned in any of them.")
-    call_insights([
-        "<strong>r/CreditCards & r/personalfinance are Vera's free acquisition channels:</strong> Thousands of monthly posts where users ask exactly 'what card is best if I have a 620 score?' — Vera is never in the answer.",
-        "<strong>High-upvote posts = validated pain points:</strong> Posts with 500+ upvotes about credit building are peer-reviewed proof of what Vera's market cares about — better than any focus group.",
-        "<strong>Zero Vera mentions = zero word of mouth:</strong> Not a single organic mention found across all relevant subreddits. The brand does not exist in the community where the buying decision happens.",
-        "<strong>Where Sigma helps:</strong> Audience intelligence model — cluster Reddit discussions into intent signals, identify the subreddits with highest conversion potential, and create a community engagement playbook.",
-        "<strong>Talking point:</strong> <em>'Your target customer is asking for product recommendations on Reddit daily. We can tell you exactly which communities, which posts, and what messaging to use — with data.'</em>",
-    ])
-
+    st.info("Hundreds of posts monthly in r/CreditCards and r/personalfinance from Vera's exact target customers — Vera is mentioned in none of them.")
     search_methodology_note(REDDIT_VERA_TERMS, "Reddit")
 
     with st.spinner("Fetching Reddit data (no API key needed)…"):
@@ -1103,7 +1059,7 @@ elif page == "💬 Reddit":
     st.markdown("---")
 
     # Subreddit heatmap for topic terms
-    st.markdown("### Where Vera's Audience Lives: Topic Volume by Subreddit")
+    st.markdown("### Audience by Subreddit")
     heat_rows = []
     for term, df in topic_dfs.items():
         if not df.empty and "subreddit" in df.columns:
@@ -1118,10 +1074,9 @@ elif page == "💬 Reddit":
                              template="plotly_white")
         fig_heat.update_layout(paper_bgcolor="#ffffff", height=400)
         st.plotly_chart(fig_heat, use_container_width=True)
-        st.caption("Each cell is a concentration of Vera's target customers discussing the problems Vera solves. Vera has zero posts in any of these communities.")
 
     # Topic volume bar
-    st.markdown("### Topic Post Volume — Vera's Audience Conversations")
+    st.markdown("### Topic Post Volume")
     topic_bar_df = pd.DataFrame({"Topic": list(topic_totals.keys()), "Posts": list(topic_totals.values())})
     fig_topic = px.bar(topic_bar_df, x="Posts", y="Topic", orientation="h",
                        color="Posts", color_continuous_scale="Greys",
@@ -1129,19 +1084,17 @@ elif page == "💬 Reddit":
                        title="Monthly Reddit Posts on Vera's Core Topics")
     fig_topic.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#ffffff", height=380, showlegend=False)
     st.plotly_chart(fig_topic, use_container_width=True)
-    st.caption("These conversations are happening right now. Vera is not part of any of them. This is a specific, actionable gap Sigma can help close with an audience intelligence model.")
 
     # Top upvoted topic posts
     non_empty_topics = [df for df in topic_dfs.values() if not df.empty]
     all_topic = pd.concat(non_empty_topics, ignore_index=True) if non_empty_topics else pd.DataFrame()
     if not all_topic.empty and "score" in all_topic.columns:
-        st.markdown("### Top Upvoted Posts — Vera's Target Audience Expressing Exact Pain Points")
+        st.markdown("### Top Upvoted Posts")
         top_posts = all_topic.nlargest(10, "score")[["title", "subreddit", "score", "num_comments", "url"]]
         for _, row in top_posts.iterrows():
             with st.expander(f"📌 r/{row['subreddit']} · {int(row['score']):,} upvotes · {int(row['num_comments']):,} comments"):
                 st.markdown(f"**{row['title']}**")
                 st.markdown(f"[View on Reddit]({row['url']})")
-        st.caption("Each of these high-upvote posts is evidence of a pain point Vera's product is designed to solve. Vera should be the top comment on every one of them.")
 
     # Vera posts if any
     if not vera_reddit.empty:
@@ -1153,14 +1106,7 @@ elif page == "💬 Reddit":
 # PAGE 5 — NEWS TRACKER
 # ============================================
 elif page == "📰 News":
-    st.info("**What this page is telling you:** Vera has had one significant press hit. Competitors receive ongoing editorial coverage in the exact publications Vera's customers read at the moment of intent. No content strategy = invisible when it matters most.")
-    call_insights([
-        "<strong>One press hit vs. constant competitor coverage:</strong> Petal, Apple Card, and Upgrade appear monthly in NerdWallet, Forbes, The Points Guy — the publications Vera's customers read when deciding which card to get.",
-        "<strong>No review ecosystem = missing organic SEO:</strong> Every competitor card has hundreds of third-party reviews that rank for 'best credit card' searches. Vera has none — it literally cannot be found.",
-        "<strong>FinWise / Vera launch announcement is the only data point:</strong> There is no follow-up coverage, no 'we tried it' articles, no influencer reviews — the press cycle started and ended immediately.",
-        "<strong>Where Sigma helps:</strong> PR opportunity tracker — monitor journalist beats and publication calendars, flag editorial windows, and give Vera's team data-backed story pitches before competitors get there.",
-        "<strong>Talking point:</strong> <em>'Petal gets a NerdWallet roundup mention every month. That single link drives thousands of applications. We can build you the system to earn that coverage.'</em>",
-    ])
+    st.info("One press hit (FinWise launch announcement). Competitors appear monthly in NerdWallet, Forbes, The Points Guy — the publications Vera's customers read at the moment of decision.")
 
     # ── SECTION A: Google News RSS (always shown, no API key needed) ──────────
     st.markdown("## 📡 Google News RSS")
@@ -1196,7 +1142,6 @@ elif page == "📰 News":
                          template="plotly_white", paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
                          height=360, showlegend=False)
     st.plotly_chart(fig_gn, use_container_width=True)
-    st.caption("Source: Google News RSS — live, no API key required. Exact-phrase queries only.")
 
     if not gn_vera.empty:
         st.markdown("### Vera Press Coverage — Google News")
@@ -1207,7 +1152,7 @@ elif page == "📰 News":
 
     gn_comp_all = pd.concat([df.assign(brand=n) for n, df in gn_comp.items() if not df.empty], ignore_index=True)
     if not gn_comp_all.empty:
-        st.markdown("### Competitor Coverage (Google News)")
+        st.markdown("### Competitor Coverage")
         gn_comp_all["published"] = pd.to_datetime(gn_comp_all["published"], errors="coerce")
         for _, row in gn_comp_all.sort_values("published", ascending=False).head(15).iterrows():
             st.markdown(f"- **[{row['title']}]({row['url']})** ({row['brand']}) — {row.get('source','')}")
@@ -1258,7 +1203,6 @@ elif page == "📰 News":
                                template="plotly_white", paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
                                height=360, showlegend=False)
         st.plotly_chart(fig_news, use_container_width=True)
-        st.caption("Exact-phrase queries against NewsAPI. Coverage gap maps directly to missing organic discovery at the moment of purchase intent.")
 
         if not vera_news.empty and "published_at" in vera_news.columns:
             vera_news["date"] = pd.to_datetime(vera_news["published_at"]).dt.date
@@ -1278,12 +1222,11 @@ elif page == "📰 News":
 
         all_comp_news = pd.concat([df.assign(brand=n) for n, df in comp_news.items() if not df.empty], ignore_index=True)
         if not all_comp_news.empty:
-            st.markdown("### Competitor Coverage — What Vera's Customers Are Reading Instead (News API)")
+            st.markdown("### Competitor Coverage (News API)")
             all_comp_news["published_at"] = pd.to_datetime(all_comp_news["published_at"], errors="coerce")
             top_comp_articles = all_comp_news.sort_values("published_at", ascending=False).head(10)[["title", "brand", "source", "published_at", "url"]]
             for _, row in top_comp_articles.iterrows():
                 st.markdown(f"- **[{row['title']}]({row['url']})** ({row['brand']}) — {row['source']}")
-            st.caption("These articles appear when Vera's customers search for 'best credit card no annual fee' or 'digital credit card review.' Vera is not in any of them.")
 
 
 # ============================================
@@ -1534,15 +1477,7 @@ elif page == "📘 Facebook":
 # PAGE — GROWTH SIGNALS
 # ============================================
 elif page == "🌐 Growth Signals":
-    st.info("**What this page is telling you:** Six independent public data sources — search trends, app stores, web archives, Reddit velocity, TikTok, and domain footprint — all tell the same story: Vera.credit is a brand that exists on paper but not yet in public consciousness. That's the window.")
-    call_insights([
-        "<strong>Google Trends is the clearest growth signal:</strong> If 'vera credit card' search volume is zero or flat, the brand hasn't broken through. If it starts spiking, something is working — Sigma should be monitoring this weekly.",
-        "<strong>App Store presence = product maturity signal:</strong> A card with a live, rated app has crossed from waitlist to real product. Vera's App Store status tells you how close to launch they are.",
-        "<strong>Wayback Machine shows domain age and crawl frequency:</strong> Frequent crawls = Google indexing the site = SEO footprint growing. A domain crawled twice since launch has zero content authority.",
-        "<strong>TikTok is where Gen Z credit card content explodes:</strong> #AppleCard has 142M views. Vera has zero TikTok presence — and this is the channel where 'I got approved for my first credit card' content goes viral.",
-        "<strong>Reddit mention velocity:</strong> Are 'vera credit' posts increasing month-over-month? Even one or two posts per month that hit r/CreditCards' front page drives thousands of app applications.",
-        "<strong>Closing angle:</strong> <em>'We can set up a weekly growth signal tracker — the moment vera.credit starts trending anywhere, your team knows within 24 hours instead of finding out three months later.'</em>",
-    ])
+    st.info("Six independent public signals — search trends, web archive, App Store, Reddit velocity, TikTok, YouTube — all at zero or baseline for vera.credit.")
 
     # ── Google Trends ──────────────────────────────────────────────────────────
     st.markdown("## 📈 Google Search Trends")
@@ -1578,18 +1513,16 @@ elif page == "🌐 Growth Signals":
                 height=420, legend=dict(orientation="h", yanchor="bottom", y=1.02),
             )
             st.plotly_chart(fig_trends, use_container_width=True)
-            st.caption("Score of 100 = peak search interest. Score of 0 = below measurable threshold. Vera at 0 means it has not yet entered the search consideration set.")
+            st.caption("0 = below measurable threshold. Vera has not yet entered the search consideration set.")
 
             if not region_df.empty:
                 st.markdown("### Where are people searching 'vera credit card'? (US DMAs)")
                 top_regions = region_df.sort_values(region_df.columns[1], ascending=False).head(10)
                 st.dataframe(top_regions, use_container_width=True)
-                st.caption("Regions with above-average interest may represent early adopter clusters — useful for geo-targeted waitlist acquisition.")
 
     # ── Wayback Machine ────────────────────────────────────────────────────────
     st.markdown("---")
-    st.markdown("## 🗃️ Web Archive Footprint (vera.credit)")
-    st.caption("Source: Wayback Machine CDX API — free, no authentication required.")
+    st.markdown("## 🗃️ Web Archive — vera.credit")
 
     with st.spinner("Checking Wayback Machine for vera.credit…"):
         wb = fetch_wayback_info(WAYBACK_DOMAIN)
@@ -1611,22 +1544,14 @@ elif page == "🌐 Growth Signals":
                            color_discrete_sequence=["#111111"])
         fig_snaps.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#ffffff", height=300)
         st.plotly_chart(fig_snaps, use_container_width=True)
-        st.caption("More frequent crawls = Google and archive bots treating the site as worth indexing. Flat = no new content signal.")
     else:
-        st.markdown("""
-        <div class="callout-warning">
-        🔍 <strong>vera.credit has very few or no recent Wayback Machine snapshots.</strong>
-        This means the site is not yet generating enough content or inbound links for bots to crawl it regularly —
-        a direct proxy for near-zero SEO authority.
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown('<div class="callout-warning">🔍 <strong>No recent snapshots</strong> — vera.credit is not yet generating enough content for bots to crawl regularly. Near-zero SEO authority.</div>', unsafe_allow_html=True)
 
     st.markdown(f"[Browse vera.credit on Wayback Machine →](https://web.archive.org/web/*/{WAYBACK_DOMAIN})")
 
     # ── App Store ──────────────────────────────────────────────────────────────
     st.markdown("---")
-    st.markdown("## 📱 App Store Presence (iOS)")
-    st.caption("Source: iTunes Search API — free, no authentication required.")
+    st.markdown("## 📱 App Store — iOS")
 
     with st.spinner("Searching App Store for vera credit…"):
         app_dfs = [fetch_app_store(q) for q in APP_STORE_QUERIES]
@@ -1642,13 +1567,7 @@ elif page == "🌐 Growth Signals":
         st.metric("Avg Rating", f"{avg_rating:.1f} ★" if avg_rating else "N/A")
 
     if vera_apps.empty:
-        st.markdown("""
-        <div class="callout-warning">
-        🔍 <strong>No vera.credit app found on the iOS App Store.</strong>
-        A credit card product with no mobile app is still in pre-launch infrastructure mode.
-        Every competitor (Petal, Apple Card, Upgrade, Tomo) has a rated iOS app as their primary customer channel.
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown('<div class="callout-warning">🔍 <strong>No vera.credit app on the iOS App Store.</strong> Every competitor has a rated app. Vera is still in pre-launch infrastructure mode.</div>', unsafe_allow_html=True)
     else:
         st.markdown("### Vera Apps Found")
         for _, row in vera_apps.iterrows():
@@ -1663,24 +1582,16 @@ elif page == "🌐 Growth Signals":
         {"App": "Vera Credit", "Ratings": "—", "Reviews": "Not listed", "Category": "—"},
     ])
     st.dataframe(comp_app_data, use_container_width=True, hide_index=True)
-    st.caption("App Store rating count is the single best proxy for active cardholder base size. Vera at zero reviews = zero active cardholders in-app.")
 
     # ── Reddit Mention Velocity ────────────────────────────────────────────────
     st.markdown("---")
-    st.markdown("## 💬 Reddit Mention Velocity (vera credit, last 12 months)")
-    st.caption("Are mentions growing month-over-month? Source: Reddit public search API.")
+    st.markdown("## 💬 Reddit Mention Velocity (12 months)")
 
     with st.spinner("Fetching Reddit mention velocity…"):
         vel_df = fetch_reddit_velocity("vera credit", SUBREDDITS, days_back=365)
 
     if vel_df.empty:
-        st.markdown("""
-        <div class="callout-warning">
-        🔍 <strong>Zero Reddit mentions found across a 12-month window.</strong>
-        Vera has not entered the Reddit credit card conversation at all. This is the baseline —
-        any future uptick here is the earliest signal that word-of-mouth has started.
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown('<div class="callout-warning">🔍 <strong>Zero Reddit mentions across 12 months.</strong> Any future uptick is the earliest word-of-mouth signal.</div>', unsafe_allow_html=True)
     else:
         vel_df["month"] = pd.to_datetime(vel_df["date"]).dt.to_period("M").dt.start_time
         monthly_vel = vel_df.groupby("month").size().reset_index(name="mentions")
@@ -1689,12 +1600,10 @@ elif page == "🌐 Growth Signals":
                          color_discrete_sequence=["#111111"])
         fig_vel.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#ffffff", height=320)
         st.plotly_chart(fig_vel, use_container_width=True)
-        st.caption("An upward trend here is the earliest signal that organic word-of-mouth has started — before it shows up anywhere else.")
 
     # ── TikTok ────────────────────────────────────────────────────────────────
     st.markdown("---")
-    st.markdown("## 🎵 TikTok Presence")
-    st.caption("TikTok has no public API. Figures below are manually researched reference data (as of June 2026).")
+    st.markdown("## 🎵 TikTok")
 
     tiktok_df = pd.DataFrame(TIKTOK_HASHTAGS_STATIC)
     tiktok_df["Est. Views (M)"] = (tiktok_df["est_views"] / 1_000_000).round(1)
@@ -1725,14 +1634,7 @@ elif page == "🌐 Growth Signals":
                                template="plotly_white", paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
                                height=380, showlegend=False)
         st.plotly_chart(fig_tt2, use_container_width=True)
-    st.caption("#AppleCard has 142M views. #VeraCredit has 0. TikTok's 'I got approved' content format is the fastest growing fintech word-of-mouth channel — and Vera is entirely absent.")
-    st.markdown("""
-    <div style="background:#f5f5f5; border:1px solid #e0e0e0; border-left:3px solid #888;
-                border-radius:4px; padding:0.7rem 1.1rem; margin:0.6rem 0 1rem 0; font-size:0.82rem; color:#555;">
-    <strong>Note:</strong> TikTok's API requires a developer account and approved access.
-    These figures are from manual hashtag page checks. Connect TikTok Research API for live tracking.
-    </div>
-    """, unsafe_allow_html=True)
+    st.caption("#AppleCard = 142M views · #VeraCredit = 0. Static reference data — TikTok API requires approved developer access.")
 
     # ── Summary signal table ───────────────────────────────────────────────────
     st.markdown("---")
@@ -1751,27 +1653,15 @@ elif page == "🌐 Growth Signals":
     | YouTube dedicated reviews | 🔴 Zero | Invisible at the moment of card research intent |
     | Google News coverage | 🟡 1–2 hits | Single launch announcement; no follow-up coverage |
     """)
-    st.caption("🔴 = absent · 🟡 = minimal · 🟢 = established. Every 🔴 is a measurable gap Sigma can build a monitoring or acquisition system around.")
+    st.caption("🔴 absent · 🟡 minimal · 🟢 established")
 
 
 elif page == "📊 Sigma Opportunity":
-    st.info("**What this page is telling you:** The data from every previous page points to a specific, measurable set of gaps. Each gap maps directly to a Sigma AI capability. This is the evidence-based case for engagement.")
-    call_insights([
-        "<strong>Lead with evidence, not pitch:</strong> Every claim on this page is backed by data from Twitter, YouTube, Reddit, and News pages — reference the numbers in the conversation.",
-        "<strong>Fast time-to-value framing:</strong> Sigma's first deliverable should be an audience intelligence report from Reddit + YouTube comment data — 2-week turnaround, zero infrastructure required from Vera.",
-        "<strong>Vera's team is lean:</strong> An early-stage startup with a small team cannot build analytics infrastructure in-house. Position Sigma as the embedded data science team they cannot yet afford to hire.",
-        "<strong>Competitive urgency:</strong> Petal raised $35M and has a 2-year head start on brand and data. Every month without analytics is a month Vera falls further behind on CAC optimisation.",
-        "<strong>Closing question:</strong> <em>'If you could wake up Monday with a live dashboard showing exactly where your customers come from and what drives them to apply — what decision would you make differently?'</em>",
-    ])
-
     st.markdown("""
-    <div style="background:#f8f8f8; border:1px solid #e0e0e0; border-left:3px solid #111111; border-radius:4px; padding:1.2rem 1.6rem; margin-bottom:1.4rem;">
-      <div style="color:#555555; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.1em; font-weight:700;">The Thesis</div>
-      <div style="color:#111111; font-size:1.05rem; margin-top:0.5rem; line-height:1.7;">
-        Vera has a differentiated product, an experienced team, and a well-defined target market.
-        What it lacks is the <strong>measurement infrastructure and analytical models</strong>
-        to find those customers, understand them, convert them, and learn from them at scale.
-        That is precisely what Sigma AI builds.
+    <div style="background:#f8f8f8; border:1px solid #e0e0e0; border-left:3px solid #111111; border-radius:4px; padding:1rem 1.4rem; margin-bottom:1.2rem;">
+      <div style="color:#555555; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em; font-weight:700;">The Thesis</div>
+      <div style="color:#111111; font-size:0.95rem; margin-top:0.4rem; line-height:1.6;">
+        Vera has a differentiated product and an experienced team. What it lacks is the <strong>measurement infrastructure and analytical models</strong> to find customers, understand them, and convert them. That is what Sigma builds.
       </div>
     </div>
     """, unsafe_allow_html=True)
@@ -1806,20 +1696,6 @@ elif page == "📊 Sigma Opportunity":
     fig_svc.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#ffffff", height=320, showlegend=False)
     st.plotly_chart(fig_svc, use_container_width=True)
 
-    # What we are NOT proposing
-    st.markdown("""
-    <div style="background:#f8f8f8; border:1px solid #e0e0e0; border-radius:4px; padding:1.2rem 1.6rem; margin-top:1.4rem;">
-      <div style="color:#111111; font-size:0.95rem; font-weight:700; margin-bottom:0.7rem;">What Sigma is NOT proposing</div>
-      <ul style="color:#333333; line-height:1.9; margin:0; padding-left:1.2rem;">
-        <li>We are <strong>not</strong> proposing to run Vera's social media.</li>
-        <li>We are <strong>not</strong> a marketing agency.</li>
-        <li>We <strong>build the measurement infrastructure and analytical models</strong>
-            that tell Vera what is working and what is not — so the Vera team can make faster,
-            better decisions with less wasted spend.</li>
-        <li>We work as Vera's <strong>embedded data science team</strong>, not a hands-off vendor.</li>
-      </ul>
-    </div>
-    """, unsafe_allow_html=True)
 
 
 # ============================================
