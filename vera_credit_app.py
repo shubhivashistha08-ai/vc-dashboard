@@ -816,11 +816,11 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-col_nav, col_disabled = st.columns([7, 3])
+col_nav, col_disabled = st.columns([8, 2])
 with col_nav:
     page = st.radio(
         "",
-        ["🏠 Brand Snapshot", "🐦 Twitter / X", "📺 YouTube", "💬 Reddit", "📰 News", "🌐 Growth Signals", "📊 Sigma Opportunity"],
+        ["🏠 Brand Snapshot", "📰 News", "🌐 Growth Signals", "📺 YouTube", "💬 Reddit", "🐦 Twitter / X", "📊 Sigma Opportunity"],
         horizontal=True,
         label_visibility="collapsed",
     )
@@ -917,136 +917,40 @@ elif page == "🐦 Twitter / X":
         "<strong>Talking point:</strong> <em>'Your competitors are losing customers publicly on Twitter and no one is catching them. We can build you a system that catches those moments in real time.'</em>",
     ])
 
-    if not TWITTER_BEARER_TOKEN:
-        st.error("Add TWITTER_BEARER_TOKEN to Streamlit secrets.")
-        st.stop()
-
-    # ── Manual refresh only — Twitter API has strict rate limits ──
-    col_btn, col_info = st.columns([1, 4])
-    with col_btn:
-        fetch_clicked = st.button("🔄 Fetch Twitter Data", type="primary")
-    with col_info:
-        last_fetch = st.session_state.get("twitter_fetched_at")
-        if last_fetch:
-            st.caption(f"Last fetched: {last_fetch}  ·  Data cached for 1 hour. Click above to refresh.")
-        else:
-            st.caption("Data not yet loaded. Click **Fetch Twitter Data** to pull from the API.")
-
-    if fetch_clicked:
-        with st.spinner("Fetching Twitter data… (this may take 15–30 seconds)"):
-            vera_dfs = []
-            twitter_error = None
-            for q in TWITTER_VERA_QUERIES:
-                status, df = fetch_twitter_data(q, TWITTER_BEARER_TOKEN, max_results=100)
-                if status == "403" and not twitter_error:
-                    twitter_error = "403"
-                elif status != "ok" and not twitter_error:
-                    twitter_error = status
-                vera_dfs.append(df)
-
-            if twitter_error == "403":
-                st.error(
-                    "**Twitter API: 403 Forbidden** — Your Bearer Token is from an app not attached to a Project.\n\n"
-                    "**Fix:** Go to [developer.twitter.com](https://developer.twitter.com) → create a Project → "
-                    "move your app into it → regenerate the Bearer Token → update Streamlit secrets."
-                )
-                st.stop()
-            elif twitter_error:
-                st.error(f"Twitter API error: {twitter_error}")
-                st.stop()
-
-            non_empty_tw = [d for d in vera_dfs if not d.empty]
-            vera_tw = pd.concat(non_empty_tw, ignore_index=True).drop_duplicates(subset=["text"]) if non_empty_tw else pd.DataFrame()
-            comp_tw = {}
-            for name, q in TWITTER_COMPETITOR_QUERIES.items():
-                _, df = fetch_twitter_data(q, TWITTER_BEARER_TOKEN, max_results=100)
-                comp_tw[name] = df
-            st.session_state["twitter_vera"] = vera_tw
-            st.session_state["twitter_comp"] = comp_tw
-            st.session_state["twitter_fetched_at"] = datetime.now().strftime("%Y-%m-%d %H:%M UTC")
-            st.success("Twitter data loaded.")
-
-    if "twitter_vera" not in st.session_state:
-        st.info("👆 Click **Fetch Twitter Data** above to load live data. Twitter API calls are rate-limited, so data is only fetched on demand.")
-        st.stop()
-
-    vera_tw = st.session_state["twitter_vera"]
-    comp_tw = st.session_state["twitter_comp"]
-
-    # Metrics
-    vera_count = len(vera_tw)
-    comp_counts = {n: len(df) for n, df in comp_tw.items()}
-
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.metric("Vera Mentions (7d)", f"{vera_count:,}")
-    with col2:
-        top_comp = max(comp_counts, key=comp_counts.get) if comp_counts else "—"
-        st.metric(f"Top Competitor ({top_comp})", f"{comp_counts.get(top_comp, 0):,}")
-    with col3:
-        if not vera_tw.empty:
-            vera_tw["sentiment"] = vera_tw["text"].apply(score_sentiment)
-            pos_pct = (vera_tw["sentiment"] == "Positive").mean() * 100
-            st.metric("Vera Positive Sentiment", f"{pos_pct:.0f}%")
-        else:
-            st.metric("Vera Positive Sentiment", "N/A")
-    with col4:
-        total_comp = sum(comp_counts.values())
-        ratio = f"1 : {total_comp // vera_count}" if vera_count > 0 else "∞"
-        st.metric("Vera vs All Competitors", ratio)
-
-    if vera_count < 5:
-        empty_vera_warning()
-
     st.markdown("---")
-
-    # Side-by-side mention bar chart
-    all_brands = {"Vera": vera_count, **comp_counts}
-    bar_df = pd.DataFrame({"Brand": list(all_brands.keys()), "Mentions": list(all_brands.values())})
-    bar_df["Color"] = bar_df["Brand"].apply(lambda x: "#111111" if x == "Vera" else "#cccccc")
-    fig_bar = go.Figure(go.Bar(
-        x=bar_df["Brand"],
-        y=bar_df["Mentions"],
-        marker_color=bar_df["Color"],
-        text=bar_df["Mentions"],
-        textposition="outside",
-    ))
-    fig_bar.update_layout(
-        title="Twitter Mentions (Last 7 Days): Vera vs Competitors",
-        template="plotly_white", paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
-        height=380, showlegend=False,
-    )
-    st.plotly_chart(fig_bar, use_container_width=True)
-    st.caption("Vera's mention volume is near zero versus an active competitor conversation. Every bar that towers above Vera represents customers who could be Vera's — if Vera were present.")
-
-    # Sentiment
-    if not vera_tw.empty:
-        st.markdown("### Vera Mention Sentiment")
-        sent_counts = vera_tw["sentiment"].value_counts().reset_index()
-        sent_counts.columns = ["Sentiment", "Count"]
-        color_map = {"Positive": "#00c853", "Neutral": "#5a7ab5", "Negative": "#e53935"}
-        fig_sent = px.pie(sent_counts, values="Count", names="Sentiment",
-                          color="Sentiment", color_discrete_map=color_map,
-                          hole=0.4, template="plotly_white")
-        fig_sent.update_layout(paper_bgcolor="#ffffff", height=340)
-        st.plotly_chart(fig_sent, use_container_width=True)
-
-    # Timeline
-    if not vera_tw.empty and "created_at" in vera_tw.columns:
-        vera_tw["date"] = pd.to_datetime(vera_tw["created_at"]).dt.date
-        daily = vera_tw.groupby("date").size().reset_index(name="mentions")
-        fig_line = px.line(daily, x="date", y="mentions", markers=True,
-                           title="Vera Mention Volume Over Time",
-                           template="plotly_white")
-        fig_line.update_traces(line_color="#111111")
-        fig_line.update_layout(paper_bgcolor="#ffffff", plot_bgcolor="#ffffff", height=320)
-        st.plotly_chart(fig_line, use_container_width=True)
-
-    # Engagement table
-    if not vera_tw.empty:
-        st.markdown("### Top Vera Tweets by Engagement")
-        display = vera_tw[["text", "like_count", "retweet_count", "reply_count", "engagement"]].sort_values("engagement", ascending=False).head(10)
-        st.dataframe(display, use_container_width=True)
+    st.markdown("""
+    <div style="background:#f8f8f8; border:1px solid #e0e0e0; border-radius:8px; padding:2.5rem 2rem; text-align:center; margin:1.5rem 0;">
+      <div style="font-size:2.2rem; margin-bottom:0.6rem;">🔒</div>
+      <div style="font-size:1.15rem; font-weight:700; color:#111111; margin-bottom:0.5rem;">Live Tweet Access Requires X API Pro</div>
+      <div style="font-size:0.9rem; color:#555555; max-width:520px; margin:0 auto 1.4rem auto; line-height:1.7;">
+        Pulling real-time tweets — including mention volume, sentiment, and competitor share-of-voice —
+        requires the <strong>X (Twitter) API Pro tier</strong>, which starts at <strong>~$100 / month</strong>.
+        The free and basic tiers no longer support search endpoints.
+      </div>
+      <div style="display:flex; justify-content:center; gap:1.2rem; flex-wrap:wrap; margin-bottom:1.6rem;">
+        <div style="background:#ffffff; border:1px solid #e0e0e0; border-radius:6px; padding:0.8rem 1.4rem; min-width:160px;">
+          <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:#888888; font-weight:700;">Free Tier</div>
+          <div style="font-size:1.1rem; font-weight:700; color:#111111; margin-top:0.2rem;">$0 / mo</div>
+          <div style="font-size:0.78rem; color:#e53935; margin-top:0.3rem;">No search access</div>
+        </div>
+        <div style="background:#ffffff; border:1px solid #e0e0e0; border-radius:6px; padding:0.8rem 1.4rem; min-width:160px;">
+          <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:#888888; font-weight:700;">Basic Tier</div>
+          <div style="font-size:1.1rem; font-weight:700; color:#111111; margin-top:0.2rem;">$100 / mo</div>
+          <div style="font-size:0.78rem; color:#e53935; margin-top:0.3rem;">Read-only, 10k tweets/mo</div>
+        </div>
+        <div style="background:#111111; border:1px solid #111111; border-radius:6px; padding:0.8rem 1.4rem; min-width:160px;">
+          <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:#aaaaaa; font-weight:700;">Pro Tier</div>
+          <div style="font-size:1.1rem; font-weight:700; color:#ffffff; margin-top:0.2rem;">$5,000 / mo</div>
+          <div style="font-size:0.78rem; color:#aaaaaa; margin-top:0.3rem;">Full search + 1M tweets/mo</div>
+        </div>
+      </div>
+      <div style="font-size:0.82rem; color:#888888; border-top:1px solid #e0e0e0; padding-top:1.2rem; max-width:520px; margin:0 auto;">
+        <strong>What you would see with access:</strong> real-time Vera mentions, competitor share-of-voice,
+        sentiment trend, and high-engagement tweets from Vera's exact target audience — updated on demand.
+        Sigma can set this up and run it as part of a brand monitoring engagement.
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 
 # ============================================
