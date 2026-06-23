@@ -769,19 +769,6 @@ def fetch_facebook_page_posts(page_name, access_token, limit=25):
         return pd.DataFrame(), {}
 
 
-def call_insights(points):
-    bullets = "".join(f"<li>{p}</li>" for p in points)
-    st.markdown(f"""
-    <div style="background:#f8f8f8; border:1px solid #e0e0e0; border-left:4px solid #111111;
-                border-radius:4px; padding:0.9rem 1.2rem; margin:0.8rem 0 1.2rem 0;">
-      <div style="color:#555555; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.1em;
-                  font-weight:700; margin-bottom:0.5rem;">📋 Key Insights for the Call</div>
-      <ul style="margin:0; padding-left:1.2rem; color:#111111; line-height:1.85; font-size:0.9rem;">
-        {bullets}
-      </ul>
-    </div>
-    """, unsafe_allow_html=True)
-
 
 def search_methodology_note(queries, platform="this platform"):
     with st.expander("Search methodology", expanded=False):
@@ -827,12 +814,6 @@ st.markdown("---")
 # PAGE 1 — BRAND SNAPSHOT
 # ============================================
 if page == "🏠 Brand Snapshot":
-    call_insights([
-        "<strong>First-mover window:</strong> Unique positioning (rewards-flexible, digital-first, near-prime) but zero brand awareness — every month without data, a funded competitor closes the gap.",
-        "<strong>Competitors are established:</strong> Petal, Apple Card, Tomo already have review ecosystems, press coverage, and social communities feeding their funnels. Vera has none.",
-        "<strong>Opening question:</strong> <em>'How are you currently measuring which channels bring in your best customers?'</em>",
-    ])
-
     col_l, col_r = st.columns([1.1, 1])
 
     with col_l:
