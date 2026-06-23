@@ -936,9 +936,10 @@ elif page == "🐦 Twitter / X":
 
             if twitter_error == "403":
                 st.warning(
-                    "**Twitter API: 403 Forbidden** — Bearer Token not attached to a Project. "
-                    "Go to developer.twitter.com → create a Project → move your app into it → regenerate the Bearer Token. "
-                    "Showing illustrative data below so the dashboard remains usable."
+                    "**Twitter API: 403 Forbidden** — The `search_recent_tweets` endpoint requires the **Basic tier ($100/month)** or higher. "
+                    "The Free tier only allows posting tweets, not searching. "
+                    "Upgrade at developer.twitter.com → your Project → Subscription. "
+                    "Showing illustrative layout below so the dashboard remains usable for the presentation."
                 )
                 # Illustrative fallback data so the dashboard stays functional
                 vera_tw = pd.DataFrame({"text": [], "like_count": [], "retweet_count": [], "reply_count": [], "engagement": [], "created_at": []})
