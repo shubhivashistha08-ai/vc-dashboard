@@ -227,7 +227,7 @@ COMPETITORS = [
 SIGMA_OPPORTUNITIES = [
     {
         "number": "01",
-        "evidence": "Zero social mentions across Twitter, YouTube, Reddit, Google News, and News API — confirmed with exact-phrase queries to eliminate false positives.",
+        "evidence": "Zero social mentions across YouTube, Reddit, Google News, and News API — confirmed with exact-phrase queries to eliminate false positives. Twitter/X search requires a paid API ($100/mo+) and could not be verified.",
         "gap": "No baseline. Vera cannot measure brand growth or share-of-voice against competitors.",
         "sigma_solution": "Real-time brand monitoring pipeline: mention tracking, sentiment scoring, weekly share-of-voice vs competitors. Live dashboard, not a spreadsheet.",
         "sigma_service": "BI & Decision Dashboards + Data Engineering",
@@ -913,7 +913,7 @@ elif page == "🐦 Twitter / X":
 # PAGE 3 — YOUTUBE
 # ============================================
 elif page == "📺 YouTube":
-    st.info("Vera has zero YouTube presence. Competitor review videos pull 50k–500k views from Vera's exact target customers at the moment of card research.")
+    st.info("Vera has zero YouTube presence. Competitor review videos — Petal, Apple Card, Upgrade — pull tens to hundreds of thousands of views from Vera's exact target customers at the moment of card research.")
     search_methodology_note(YOUTUBE_VERA_QUERIES, "YouTube")
 
     if not YOUTUBE_API_KEY:
@@ -1628,7 +1628,7 @@ elif page == "📊 Sigma Opportunity":
             <div class="opp-gap-label">Gap (what it means for Vera)</div>
             <div class="opp-gap">{opp['gap']}</div>
             <div class="opp-solution">
-              <div class="opp-solution-label">Sigma Solution</div>
+              <div class="opp-solution-label">Possible Solution</div>
               <div class="opp-solution-text">{opp['sigma_solution']}</div>
             </div>
             <div class="opp-tag">{opp['sigma_service']}</div>
