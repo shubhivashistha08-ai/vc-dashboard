@@ -560,8 +560,7 @@ def empty_vera_warning():
 # ============================================
 st.markdown("""
 <div class="vera-hero">
-  <h1>💳 Vera Credit &nbsp;·&nbsp; Social Intelligence Dashboard</h1>
-  <p>Sigma AI Analytics &nbsp;·&nbsp; Pre-Call Preparation &nbsp;·&nbsp; June 2026</p>
+  <h1>💳 Vera Credit</h1>
 </div>
 """, unsafe_allow_html=True)
 
