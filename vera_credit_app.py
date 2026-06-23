@@ -611,16 +611,38 @@ elif page == "🐦 Twitter / X":
         st.error("Add TWITTER_BEARER_TOKEN to Streamlit secrets.")
         st.stop()
 
-    with st.spinner("Fetching Twitter data…"):
-        vera_dfs = []
-        for q in TWITTER_VERA_QUERIES:
-            df = fetch_twitter_data(q, TWITTER_BEARER_TOKEN, max_results=100)
-            vera_dfs.append(df)
-        vera_tw = pd.concat(vera_dfs, ignore_index=True).drop_duplicates(subset=["text"]) if any(not d.empty for d in vera_dfs) else pd.DataFrame()
+    # ── Manual refresh only — Twitter API has strict rate limits ──
+    col_btn, col_info = st.columns([1, 4])
+    with col_btn:
+        fetch_clicked = st.button("🔄 Fetch Twitter Data", type="primary")
+    with col_info:
+        last_fetch = st.session_state.get("twitter_fetched_at")
+        if last_fetch:
+            st.caption(f"Last fetched: {last_fetch}  ·  Data cached for 1 hour. Click above to refresh.")
+        else:
+            st.caption("Data not yet loaded. Click **Fetch Twitter Data** to pull from the API.")
 
-        comp_tw = {}
-        for name, q in TWITTER_COMPETITOR_QUERIES.items():
-            comp_tw[name] = fetch_twitter_data(q, TWITTER_BEARER_TOKEN, max_results=100)
+    if fetch_clicked:
+        with st.spinner("Fetching Twitter data… (this may take 15–30 seconds)"):
+            vera_dfs = []
+            for q in TWITTER_VERA_QUERIES:
+                df = fetch_twitter_data(q, TWITTER_BEARER_TOKEN, max_results=100)
+                vera_dfs.append(df)
+            vera_tw = pd.concat(vera_dfs, ignore_index=True).drop_duplicates(subset=["text"]) if any(not d.empty for d in vera_dfs) else pd.DataFrame()
+            comp_tw = {}
+            for name, q in TWITTER_COMPETITOR_QUERIES.items():
+                comp_tw[name] = fetch_twitter_data(q, TWITTER_BEARER_TOKEN, max_results=100)
+            st.session_state["twitter_vera"] = vera_tw
+            st.session_state["twitter_comp"] = comp_tw
+            st.session_state["twitter_fetched_at"] = datetime.now().strftime("%Y-%m-%d %H:%M UTC")
+            st.success("Twitter data loaded.")
+
+    if "twitter_vera" not in st.session_state:
+        st.info("👆 Click **Fetch Twitter Data** above to load live data. Twitter API calls are rate-limited, so data is only fetched on demand.")
+        st.stop()
+
+    vera_tw = st.session_state["twitter_vera"]
+    comp_tw = st.session_state["twitter_comp"]
 
     # Metrics
     vera_count = len(vera_tw)
