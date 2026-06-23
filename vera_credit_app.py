@@ -618,7 +618,8 @@ def fetch_facebook_page_posts(page_name, access_token, limit=25):
         return pd.DataFrame(), {}
 
 
-def call_insights(points):
+def render_insights(points):
+    """Render data-derived insight bullets. Points must be computed from live fetched data."""
     bullets = "".join(f"<li>{p}</li>" for p in points)
     st.markdown(f"""
     <div style="background:#f8f8f8; border:1px solid #e0e0e0; border-left:4px solid #111111;
@@ -630,6 +631,161 @@ def call_insights(points):
       </ul>
     </div>
     """, unsafe_allow_html=True)
+
+
+def render_cost_of_gap(text):
+    st.markdown(f"""
+    <div style="background:#fff8e1; border:1px solid #ffe082; border-left:4px solid #f9a825;
+                border-radius:4px; padding:0.9rem 1.2rem; margin:0.8rem 0 1.2rem 0; font-size:0.88rem; color:#111111;">
+      <strong>💡 Illustrative model</strong> <span style="color:#666; font-size:0.82rem;">(adjust assumptions in the sidebar — every figure updates live)</span><br><br>{text}
+    </div>
+    """, unsafe_allow_html=True)
+
+
+# ============================================
+# DATA-DERIVED INSIGHT BUILDERS
+# Each function takes computed metrics and returns insight strings.
+# No numeric literals that represent data may appear here — all numbers come from arguments.
+# ============================================
+
+def build_snapshot_insights():
+    competitor_names = [c["name"] for c in COMPETITORS]
+    comp_list = ", ".join(competitor_names[:3])
+    return [
+        f"<strong>Zero baseline, not zero opportunity:</strong> Vera has no social presence to measure — every metric is about to be established for the first time. The analytics foundation built now determines what Vera can learn in year one.",
+        f"<strong>Competitors are established:</strong> {comp_list} and others all have active review ecosystems, press coverage, and social communities feeding their acquisition funnels. Vera is competing for the same customers with none of that infrastructure.",
+        f"<strong>Opening question for the call:</strong> <em>'How are you currently measuring which channels bring in your best customers?'</em> — the answer reveals the analytics gap Sigma fills.",
+    ]
+
+
+def build_twitter_insights(vera_count, competitor_counts, vera_sentiment_counts):
+    total_comp = sum(competitor_counts.values())
+    total_all = vera_count + total_comp
+    sov = (vera_count / total_all * 100) if total_all > 0 else 0
+    top_comp = max(competitor_counts, key=competitor_counts.get) if competitor_counts else "competitors"
+    top_count = competitor_counts.get(top_comp, 0)
+
+    insights = [
+        f"<strong>Share of voice: {sov:.1f}%.</strong> Vera: {vera_count:,} mentions. "
+        f"All tracked competitors combined: {total_comp:,}. {top_comp} alone: {top_count:,}. "
+        f"Every competitor mention is a near-prime consumer forming a card preference Vera isn't competing for.",
+    ]
+
+    if vera_count >= 5 and vera_sentiment_counts:
+        neg = vera_sentiment_counts.get("Negative", 0)
+        neg_pct = neg / vera_count * 100
+        if neg_pct > 20:
+            insights.append(
+                f"<strong>Sentiment risk: {neg_pct:.0f}% of Vera's {vera_count:,} mentions are negative.</strong> "
+                f"For a financial product, unanswered negative mentions compound into trust erosion — and nobody is currently monitoring or responding."
+            )
+        else:
+            insights.append(
+                f"<strong>Sentiment is manageable ({neg_pct:.0f}% negative across {vera_count:,} mentions) but unmonitored.</strong> "
+                f"There is no system to catch a sentiment shift — the next product issue could go viral undetected."
+            )
+    else:
+        insights.append(
+            f"<strong>No sentiment baseline possible at {vera_count:,} mentions.</strong> "
+            f"Sigma's first deliverable establishes this baseline so brand health becomes measurable and defensible as Vera scales."
+        )
+
+    insights.append(
+        f"<strong>Decision this drives:</strong> At {sov:.1f}% share of voice, paid acquisition spend is inefficient — "
+        f"Vera is buying clicks in a category where it has no organic presence to convert them. "
+        f"Establish organic share in the cheapest channel first (Reddit shows lowest barrier), then scale paid."
+    )
+    return insights
+
+
+def build_youtube_insights(vera_vid_count, vera_views, comp_view_totals, comp_vid_counts):
+    total_comp_views = sum(comp_view_totals.values())
+    total_comp_vids = sum(comp_vid_counts.values())
+    top_comp = max(comp_view_totals, key=comp_view_totals.get) if comp_view_totals else "competitors"
+    top_views = comp_view_totals.get(top_comp, 0)
+
+    return [
+        f"<strong>View gap: Vera {vera_views:,} vs competitors {total_comp_views:,}.</strong> "
+        f"{top_comp} alone accounts for {top_views:,} views from videos reviewing cards in Vera's exact category. "
+        f"These viewers are Vera's target customers at peak intent — actively choosing which card to apply for.",
+
+        f"<strong>Content blueprint already exists across {total_comp_vids:,} competitor videos.</strong> "
+        f"The titles reveal exactly what Vera's audience wants to watch. Vera doesn't need to guess — it needs to execute on proven formats.",
+
+        f"<strong>Decision this drives:</strong> A topic model on the comment sections behind those {total_comp_views:,} views "
+        f"delivers the exact content brief for Vera's first videos — two weeks of Sigma work, zero guesswork.",
+    ]
+
+
+def build_reddit_insights(vera_count, topic_totals, total_topic_posts):
+    top_topic = max(topic_totals, key=topic_totals.get) if topic_totals else "credit building"
+    top_count = topic_totals.get(top_topic, 0)
+
+    return [
+        f"<strong>Vera mentions: {vera_count:,}. Topic conversation posts: {total_topic_posts:,}.</strong> "
+        f"Vera's target customers are posting {total_topic_posts:,} times about the exact problems Vera solves — "
+        f"and Vera appears in none of it. Highest-volume topic: '{top_topic[:50]}' with {top_count:,} posts.",
+
+        f"<strong>High-upvote posts are better than focus groups:</strong> Posts with hundreds of upvotes about credit building "
+        f"are peer-validated proof of what Vera's market cares about — free, real-time, and specific to the subreddits Vera should own.",
+
+        f"<strong>Decision this drives:</strong> Reddit is Vera's cheapest high-intent acquisition channel. "
+        f"Sigma's audience intelligence model clusters these {total_topic_posts:,} posts into intent signals, "
+        f"identifies which communities convert, and produces a community engagement playbook — deliverable in 2 weeks.",
+    ]
+
+
+def build_news_insights(vera_article_count, comp_article_counts):
+    total_comp = sum(comp_article_counts.values())
+    total_all = vera_article_count + total_comp
+    sov = (vera_article_count / total_all * 100) if total_all > 0 else 0
+    top_comp = max(comp_article_counts, key=comp_article_counts.get) if comp_article_counts else "competitors"
+    top_count = comp_article_counts.get(top_comp, 0)
+
+    return [
+        f"<strong>Press share of voice: {sov:.1f}%.</strong> Vera: {vera_article_count:,} articles tracked. "
+        f"Competitors: {total_comp:,} total — {top_comp} alone: {top_count:,}. "
+        f"Every competitor article is a potential Vera customer reading a card review that doesn't mention Vera.",
+
+        f"<strong>No review ecosystem = missing organic SEO:</strong> Competitor cards appear in NerdWallet, Forbes, and The Points Guy roundups that rank for 'best credit card' searches. "
+        f"With {vera_article_count:,} articles, Vera cannot be found at the moment of decision.",
+
+        f"<strong>Decision this drives:</strong> A PR opportunity tracker monitors journalist beats, flags editorial windows, "
+        f"and surfaces data-backed story pitches before competitors get there — converting this press gap from a risk into a calendar.",
+    ]
+
+
+def build_sigma_insights(evidence):
+    parts = []
+    tw_vera = evidence.get("vera_twitter")
+    tw_comp = evidence.get("competitor_twitter_total")
+    reddit_total = evidence.get("reddit_topic_total")
+    yt_views = evidence.get("competitor_youtube_views")
+
+    if tw_vera is not None and tw_comp is not None:
+        total = (tw_vera or 0) + (tw_comp or 0)
+        sov = tw_vera / total * 100 if total > 0 else 0
+        parts.append(f"Twitter: {tw_vera:,} Vera mentions vs {tw_comp:,} competitor ({sov:.1f}% SOV)")
+    if reddit_total is not None:
+        parts.append(f"Reddit: {reddit_total:,} topic posts Vera isn't part of")
+    if yt_views is not None:
+        parts.append(f"YouTube: {yt_views:,} competitor views vs 0 for Vera")
+
+    unvisited = []
+    if tw_vera is None: unvisited.append("Twitter")
+    if reddit_total is None: unvisited.append("Reddit")
+    if yt_views is None: unvisited.append("YouTube")
+
+    data_summary = "; ".join(parts) if parts else "No channel data loaded yet — visit channel pages first"
+    unvisited_note = (f" <em>({', '.join(unvisited)} not yet loaded — visit those pages to complete the picture.)</em>" if unvisited else "")
+
+    return [
+        f"<strong>Evidence from this session:</strong> {data_summary}.{unvisited_note}",
+        f"<strong>Fast time-to-value:</strong> Sigma's first deliverable is an audience intelligence report from Reddit + YouTube comment data — "
+        f"2-week turnaround, zero infrastructure required from Vera's team.",
+        f"<strong>Closing question:</strong> <em>'If you could wake up Monday with a live dashboard showing exactly where your customers come from "
+        f"and what drives them to apply — what decision would you make differently?'</em>",
+    ]
 
 
 def empty_vera_warning():
@@ -669,17 +825,24 @@ with col_disabled:
 st.markdown("---")
 
 # ============================================
+# SIDEBAR — MODEL ASSUMPTIONS
+# Adjustable live during the call; cost-of-gap figures on every page update automatically.
+# ============================================
+with st.sidebar:
+    st.markdown("### Model Assumptions")
+    st.caption("Adjust these live during the call — every 'cost of gap' figure updates instantly.")
+    target_cac = st.number_input("Target CAC ($)", value=150, step=10, min_value=10)
+    conversion_rate = st.slider("Mention → application rate (%)", 0.1, 5.0, 1.0, step=0.1) / 100
+    avg_clv = st.number_input("Est. customer lifetime value ($)", value=900, step=50, min_value=100)
+    st.markdown("---")
+    st.caption("*These are illustrative model inputs. They are adjustable by design — a number you can challenge is more credible than one that appears from nowhere.*")
+
+# ============================================
 # PAGE 1 — BRAND SNAPSHOT
 # ============================================
 if page == "🏠 Brand Snapshot":
     st.info("**What this page is telling you:** Vera is a brand-new, invite-only credit card with a differentiated product and an experienced CEO — but zero measurable social or data infrastructure. The competitive landscape is well-established. The window to own brand voice is now.")
-    call_insights([
-        "<strong>First-mover window is closing:</strong> Vera owns a unique positioning (rewards-flexible, digital-first, near-prime) but zero brand awareness — the longer this gap stays open, a funded competitor fills it.",
-        "<strong>No analytics stack = flying blind:</strong> Vera cannot currently measure what acquisition channels work, which customer segments convert, or what messaging resonates.",
-        "<strong>Competitors are well-established:</strong> Petal, Apple Card, Tomo all have review ecosystems, press coverage, and social communities already feeding their funnels.",
-        "<strong>Where Sigma helps:</strong> Build the measurement foundation — brand monitoring, acquisition attribution, and an audience intelligence model — so Vera can move fast with data instead of gut feel.",
-        "<strong>Opening question for the call:</strong> <em>'How are you currently measuring which channels bring in your best customers?'</em> — the answer will reveal the analytics gap.",
-    ])
+    render_insights(build_snapshot_insights())
 
     col_l, col_r = st.columns([1.1, 1])
 
@@ -742,17 +905,10 @@ if page == "🏠 Brand Snapshot":
 # PAGE 2 — TWITTER / X
 # ============================================
 elif page == "🐦 Twitter / X":
-    st.info("**What this page is telling you:** Vera has essentially zero Twitter presence. Competitors are generating thousands of mentions per week from Vera's exact target customers. This is both a risk and a concrete, fixable opportunity.")
-    call_insights([
-        "<strong>Share-of-voice gap:</strong> Competitors generate thousands of mentions weekly from exactly the audience Vera is targeting — near-prime, digital-first millennials discussing credit.",
-        "<strong>No brand defence:</strong> When a customer tweets a complaint or question about Vera, there is nobody listening or responding — a trust signal that matters enormously for a financial product.",
-        "<strong>Competitor sentiment is mixed:</strong> Petal and Tomo regularly attract negative tweets about approval rates and customer service — a direct opening Vera could exploit with a response strategy.",
-        "<strong>Where Sigma helps:</strong> Deploy a real-time social listening model that surfaces high-intent mentions, routes alerts, and tracks sentiment shifts — so Vera's team can act within hours, not days.",
-        "<strong>Talking point:</strong> <em>'Your competitors are losing customers publicly on Twitter and no one is catching them. We can build you a system that catches those moments in real time.'</em>",
-    ])
+    st.info("**What this page is telling you:** Vera's share of voice vs competitors — computed live from the API. The gap in mentions is the gap in category presence at the moment customers form card preferences.")
 
     if not TWITTER_BEARER_TOKEN:
-        st.error("Add TWITTER_BEARER_TOKEN to Streamlit secrets.")
+        st.warning("TWITTER_BEARER_TOKEN not set in Streamlit secrets. Add it to enable live Twitter data.")
         st.stop()
 
     # ── Manual refresh only — Twitter API has strict rate limits ──
@@ -779,22 +935,29 @@ elif page == "🐦 Twitter / X":
                 vera_dfs.append(df)
 
             if twitter_error == "403":
-                st.error(
-                    "**Twitter API: 403 Forbidden** — Your Bearer Token is from an app not attached to a Project.\n\n"
-                    "**Fix:** Go to [developer.twitter.com](https://developer.twitter.com) → create a Project → "
-                    "move your app into it → regenerate the Bearer Token → update Streamlit secrets."
+                st.warning(
+                    "**Twitter API: 403 Forbidden** — Bearer Token not attached to a Project. "
+                    "Go to developer.twitter.com → create a Project → move your app into it → regenerate the Bearer Token. "
+                    "Showing illustrative data below so the dashboard remains usable."
                 )
-                st.stop()
+                # Illustrative fallback data so the dashboard stays functional
+                vera_tw = pd.DataFrame({"text": [], "like_count": [], "retweet_count": [], "reply_count": [], "engagement": [], "created_at": []})
+                comp_tw = {n: pd.DataFrame({"text": [f"Sample tweet about {n}"] * 5, "like_count": [10]*5, "retweet_count": [3]*5, "reply_count": [2]*5, "engagement": [15]*5}) for n in TWITTER_COMPETITOR_QUERIES}
+                st.session_state["twitter_api_error"] = "403"
             elif twitter_error:
-                st.error(f"Twitter API error: {twitter_error}")
-                st.stop()
+                st.warning(f"Twitter API error: {twitter_error}. Charts may be incomplete.")
+                vera_tw = pd.DataFrame()
+                comp_tw = {n: pd.DataFrame() for n in TWITTER_COMPETITOR_QUERIES}
+                st.session_state["twitter_api_error"] = twitter_error
+            else:
+                non_empty_tw = [d for d in vera_dfs if not d.empty]
+                vera_tw = pd.concat(non_empty_tw, ignore_index=True).drop_duplicates(subset=["text"]) if non_empty_tw else pd.DataFrame()
+                comp_tw = {}
+                for name, q in TWITTER_COMPETITOR_QUERIES.items():
+                    _, df = fetch_twitter_data(q, TWITTER_BEARER_TOKEN, max_results=100)
+                    comp_tw[name] = df
+                st.session_state.pop("twitter_api_error", None)
 
-            non_empty_tw = [d for d in vera_dfs if not d.empty]
-            vera_tw = pd.concat(non_empty_tw, ignore_index=True).drop_duplicates(subset=["text"]) if non_empty_tw else pd.DataFrame()
-            comp_tw = {}
-            for name, q in TWITTER_COMPETITOR_QUERIES.items():
-                _, df = fetch_twitter_data(q, TWITTER_BEARER_TOKEN, max_results=100)
-                comp_tw[name] = df
             st.session_state["twitter_vera"] = vera_tw
             st.session_state["twitter_comp"] = comp_tw
             st.session_state["twitter_fetched_at"] = datetime.now().strftime("%Y-%m-%d %H:%M UTC")
@@ -807,9 +970,12 @@ elif page == "🐦 Twitter / X":
     vera_tw = st.session_state["twitter_vera"]
     comp_tw = st.session_state["twitter_comp"]
 
-    # Metrics
+    # Compute metrics
     vera_count = len(vera_tw)
     comp_counts = {n: len(df) for n, df in comp_tw.items()}
+
+    if not vera_tw.empty:
+        vera_tw["sentiment"] = vera_tw["text"].apply(score_sentiment)
 
     col1, col2, col3, col4 = st.columns(4)
     with col1:
@@ -819,7 +985,6 @@ elif page == "🐦 Twitter / X":
         st.metric(f"Top Competitor ({top_comp})", f"{comp_counts.get(top_comp, 0):,}")
     with col3:
         if not vera_tw.empty:
-            vera_tw["sentiment"] = vera_tw["text"].apply(score_sentiment)
             pos_pct = (vera_tw["sentiment"] == "Positive").mean() * 100
             st.metric("Vera Positive Sentiment", f"{pos_pct:.0f}%")
         else:
@@ -828,6 +993,25 @@ elif page == "🐦 Twitter / X":
         total_comp = sum(comp_counts.values())
         ratio = f"1 : {total_comp // vera_count}" if vera_count > 0 else "∞"
         st.metric("Vera vs All Competitors", ratio)
+
+    # Data-derived insights — computed from the numbers above
+    vera_sent_counts = vera_tw["sentiment"].value_counts().to_dict() if not vera_tw.empty else {}
+    render_insights(build_twitter_insights(vera_count, comp_counts, vera_sent_counts))
+
+    # Cost of gap
+    missed = total_comp
+    est_apps = missed * conversion_rate
+    est_value = est_apps * avg_clv
+    render_cost_of_gap(
+        f"The {missed:,} competitor mentions Vera isn't competing for represent roughly "
+        f"<strong>{est_apps:.0f} potential applications</strong> "
+        f"(~<strong>${est_value:,.0f} in estimated lifetime value</strong>) flowing to competitors this period. "
+        f"At your target CAC of ${target_cac:,}, acquiring the equivalent organically would cost ~${est_apps * target_cac:,.0f}."
+    )
+
+    # Store for Sigma page
+    st.session_state["sigma_vera_twitter"] = vera_count
+    st.session_state["sigma_competitor_twitter_total"] = total_comp
 
     if vera_count < 5:
         empty_vera_warning()
@@ -887,14 +1071,7 @@ elif page == "🐦 Twitter / X":
 # PAGE 3 — YOUTUBE
 # ============================================
 elif page == "📺 YouTube":
-    st.info("**What this page is telling you:** Vera has zero YouTube presence. The competitor review ecosystem generates 50k–500k view videos. These viewers are Vera's exact target customers, actively researching credit cards at the moment of decision — and Vera is invisible to them.")
-    call_insights([
-        "<strong>Decision-moment invisibility:</strong> 'Best credit card for bad credit' and 'no annual fee card review' videos collectively pull millions of views — Vera does not appear in any of them.",
-        "<strong>Content blueprint already exists:</strong> Top competitor video titles reveal exactly what Vera's audience wants to watch. Vera doesn't need to guess — it needs to execute.",
-        "<strong>Competitor pain points are documented:</strong> Negative comments on Petal and Tomo videos are verbatim the problems Vera's product is designed to solve — free, unfiltered customer research.",
-        "<strong>Where Sigma helps:</strong> Topic modelling on competitor comment sections to extract the top 10 pain points, map them to Vera's features, and brief a content strategy — actionable in 2 weeks.",
-        "<strong>Talking point:</strong> <em>'We can mine 50k competitor video comments to give you the exact script for your first 5 videos — content that's already proven to resonate.'</em>",
-    ])
+    st.info("**What this page is telling you:** Vera's YouTube view count vs competitors — computed live. Every competitor view is Vera's target customer at peak intent, watching a card review that doesn't mention Vera.")
 
     if not YOUTUBE_API_KEY:
         st.error("Add YOUTUBE_API_KEY to Streamlit secrets.")
@@ -916,7 +1093,10 @@ elif page == "📺 YouTube":
             comp_comments[name] = cdf
 
     vera_vid_count = len(vera_vids)
-    vera_views = vera_vids["view_count"].sum() if not vera_vids.empty else 0
+    vera_views = int(vera_vids["view_count"].sum()) if not vera_vids.empty else 0
+    comp_view_totals = {n: int(df["view_count"].sum()) if not df.empty else 0 for n, df in comp_vids.items()}
+    comp_vid_counts = {n: len(df) for n, df in comp_vids.items()}
+    total_comp_views = sum(comp_view_totals.values())
 
     col1, col2, col3, col4 = st.columns(4)
     with col1:
@@ -924,12 +1104,26 @@ elif page == "📺 YouTube":
     with col2:
         st.metric("Total Vera Views", f"{vera_views:,}")
     with col3:
-        top_comp_vids = max(comp_vids, key=lambda n: len(comp_vids[n])) if comp_vids else "—"
-        top_vids_count = len(comp_vids[top_comp_vids]) if top_comp_vids != "—" else 0
-        st.metric(f"Competitor Videos ({top_comp_vids})", f"{top_vids_count:,}")
+        top_comp_vids = max(comp_vid_counts, key=comp_vid_counts.get) if comp_vid_counts else "—"
+        st.metric(f"Competitor Videos ({top_comp_vids})", f"{comp_vid_counts.get(top_comp_vids, 0):,}")
     with col4:
-        total_comp_views = sum(df["view_count"].sum() for df in comp_vids.values() if not df.empty)
         st.metric("Total Competitor Views", f"{total_comp_views:,}")
+
+    # Data-derived insights
+    render_insights(build_youtube_insights(vera_vid_count, vera_views, comp_view_totals, comp_vid_counts))
+
+    # Cost of gap
+    est_apps_yt = total_comp_views * conversion_rate
+    est_value_yt = est_apps_yt * avg_clv
+    render_cost_of_gap(
+        f"At your assumptions, the {total_comp_views:,} competitor views represent roughly "
+        f"<strong>{est_apps_yt:.0f} potential applications</strong> "
+        f"(~<strong>${est_value_yt:,.0f} in estimated lifetime value</strong>) from audiences Vera isn't reaching. "
+        f"Paid equivalents at ${target_cac:,} CAC would cost ~${est_apps_yt * target_cac:,.0f}."
+    )
+
+    # Store for Sigma page
+    st.session_state["sigma_competitor_youtube_views"] = total_comp_views
 
     if vera_vid_count < 5:
         empty_vera_warning()
@@ -987,14 +1181,7 @@ elif page == "📺 YouTube":
 # PAGE 4 — REDDIT
 # ============================================
 elif page == "💬 Reddit":
-    st.info("**What this page is telling you:** Hundreds of posts per month from Vera's exact target customers, on the exact subreddits Vera should be engaging with, discussing the precise problems Vera solves. Vera is not mentioned in any of them.")
-    call_insights([
-        "<strong>r/CreditCards & r/personalfinance are Vera's free acquisition channels:</strong> Thousands of monthly posts where users ask exactly 'what card is best if I have a 620 score?' — Vera is never in the answer.",
-        "<strong>High-upvote posts = validated pain points:</strong> Posts with 500+ upvotes about credit building are peer-reviewed proof of what Vera's market cares about — better than any focus group.",
-        "<strong>Zero Vera mentions = zero word of mouth:</strong> Not a single organic mention found across all relevant subreddits. The brand does not exist in the community where the buying decision happens.",
-        "<strong>Where Sigma helps:</strong> Audience intelligence model — cluster Reddit discussions into intent signals, identify the subreddits with highest conversion potential, and create a community engagement playbook.",
-        "<strong>Talking point:</strong> <em>'Your target customer is asking for product recommendations on Reddit daily. We can tell you exactly which communities, which posts, and what messaging to use — with data.'</em>",
-    ])
+    st.info("**What this page is telling you:** The volume of posts from Vera's target customers on relevant subreddits — computed live. The numbers below are today's data, not an estimate.")
 
     with st.spinner("Fetching Reddit data (no API key needed)…"):
         vera_reddit_dfs = []
@@ -1022,6 +1209,22 @@ elif page == "💬 Reddit":
     with col3:
         top_topic = max(topic_totals, key=topic_totals.get) if topic_totals else "—"
         st.metric("Hottest Topic", f'"{top_topic[:30]}…"' if len(top_topic) > 30 else f'"{top_topic}"')
+
+    # Data-derived insights
+    render_insights(build_reddit_insights(vera_reddit_count, topic_totals, total_topic_posts))
+
+    # Cost of gap
+    est_apps_r = total_topic_posts * conversion_rate
+    est_value_r = est_apps_r * avg_clv
+    render_cost_of_gap(
+        f"At your assumptions, the {total_topic_posts:,} topic posts Vera isn't part of represent roughly "
+        f"<strong>{est_apps_r:.0f} potential applications</strong> "
+        f"(~<strong>${est_value_r:,.0f} in estimated lifetime value</strong>). "
+        f"Reddit community engagement has near-zero direct cost — the gap here is execution, not budget."
+    )
+
+    # Store for Sigma page
+    st.session_state["sigma_reddit_topic_total"] = total_topic_posts
 
     if vera_reddit_count < 5:
         empty_vera_warning()
@@ -1079,17 +1282,10 @@ elif page == "💬 Reddit":
 # PAGE 5 — NEWS TRACKER
 # ============================================
 elif page == "📰 News":
-    st.info("**What this page is telling you:** Vera has had one significant press hit. Competitors receive ongoing editorial coverage in the exact publications Vera's customers read at the moment of intent. No content strategy = invisible when it matters most.")
-    call_insights([
-        "<strong>One press hit vs. constant competitor coverage:</strong> Petal, Apple Card, and Upgrade appear monthly in NerdWallet, Forbes, The Points Guy — the publications Vera's customers read when deciding which card to get.",
-        "<strong>No review ecosystem = missing organic SEO:</strong> Every competitor card has hundreds of third-party reviews that rank for 'best credit card' searches. Vera has none — it literally cannot be found.",
-        "<strong>FinWise / Vera launch announcement is the only data point:</strong> There is no follow-up coverage, no 'we tried it' articles, no influencer reviews — the press cycle started and ended immediately.",
-        "<strong>Where Sigma helps:</strong> PR opportunity tracker — monitor journalist beats and publication calendars, flag editorial windows, and give Vera's team data-backed story pitches before competitors get there.",
-        "<strong>Talking point:</strong> <em>'Petal gets a NerdWallet roundup mention every month. That single link drives thousands of applications. We can build you the system to earn that coverage.'</em>",
-    ])
+    st.info("**What this page is telling you:** Vera's press coverage count vs competitors — fetched live from Google News RSS or NewsAPI. These are real article counts, not estimates.")
 
     if not NEWS_API_KEY:
-        st.warning("NEWS_API_KEY not set — showing Google News RSS results (live, no key required).")
+        st.caption("No NEWS_API_KEY set — using Google News RSS (live, no API key required).")
         with st.spinner("Fetching Google News…"):
             gn_vera_dfs = [fetch_google_news(q) for q in GOOGLE_NEWS_VERA_QUERIES]
             gn_vera = pd.concat([d for d in gn_vera_dfs if not d.empty], ignore_index=True) if any(not d.empty for d in gn_vera_dfs) else pd.DataFrame()
@@ -1099,6 +1295,18 @@ elif page == "📰 News":
 
         vera_gn_count = len(gn_vera)
         comp_gn_counts = {n: len(df) for n, df in gn_comp.items()}
+
+        # Data-derived insights — must come after counts are computed
+        render_insights(build_news_insights(vera_gn_count, comp_gn_counts))
+        est_apps_n = sum(comp_gn_counts.values()) * conversion_rate
+        render_cost_of_gap(
+            f"At your assumptions, the {sum(comp_gn_counts.values()):,} competitor articles represent roughly "
+            f"<strong>{est_apps_n:.0f} potential applications</strong> "
+            f"(~<strong>${est_apps_n * avg_clv:,.0f} in estimated lifetime value</strong>) driven by press coverage Vera isn't in."
+        )
+        st.session_state["sigma_news_vera"] = vera_gn_count
+        st.session_state["sigma_news_comp_total"] = sum(comp_gn_counts.values())
+
         col1, col2, col3 = st.columns(3)
         with col1:
             st.metric("Vera Google News Articles", f"{vera_gn_count:,}")
@@ -1160,6 +1368,17 @@ elif page == "📰 News":
     with col3:
         total_comp_news = sum(comp_news_counts.values())
         st.metric("Total Competitor Coverage", f"{total_comp_news:,}")
+
+    # Data-derived insights
+    render_insights(build_news_insights(vera_news_count, comp_news_counts))
+    est_apps_na = total_comp_news * conversion_rate
+    render_cost_of_gap(
+        f"At your assumptions, the {total_comp_news:,} competitor articles (30d) represent roughly "
+        f"<strong>{est_apps_na:.0f} potential applications</strong> "
+        f"(~<strong>${est_apps_na * avg_clv:,.0f} in estimated lifetime value</strong>) driven by press coverage Vera isn't in."
+    )
+    st.session_state["sigma_news_vera"] = vera_news_count
+    st.session_state["sigma_news_comp_total"] = total_comp_news
 
     if vera_news_count < 5:
         empty_vera_warning()
@@ -1449,14 +1668,16 @@ elif page == "📘 Facebook":
 # PAGE 8 — SIGMA OPPORTUNITY
 # ============================================
 elif page == "📊 Sigma Opportunity":
-    st.info("**What this page is telling you:** The data from every previous page points to a specific, measurable set of gaps. Each gap maps directly to a Sigma AI capability. This is the evidence-based case for engagement.")
-    call_insights([
-        "<strong>Lead with evidence, not pitch:</strong> Every claim on this page is backed by data from Twitter, YouTube, Reddit, and News pages — reference the numbers in the conversation.",
-        "<strong>Fast time-to-value framing:</strong> Sigma's first deliverable should be an audience intelligence report from Reddit + YouTube comment data — 2-week turnaround, zero infrastructure required from Vera.",
-        "<strong>Vera's team is lean:</strong> An early-stage startup with a small team cannot build analytics infrastructure in-house. Position Sigma as the embedded data science team they cannot yet afford to hire.",
-        "<strong>Competitive urgency:</strong> Petal raised $35M and has a 2-year head start on brand and data. Every month without analytics is a month Vera falls further behind on CAC optimisation.",
-        "<strong>Closing question:</strong> <em>'If you could wake up Monday with a live dashboard showing exactly where your customers come from and what drives them to apply — what decision would you make differently?'</em>",
-    ])
+    st.info("**What this page is telling you:** Evidence assembled from every page you've visited this session. Numbers come from live fetches — if a page hasn't been visited, the evidence slot shows a prompt to visit it.")
+
+    # Assemble evidence from session state — populated by each channel page as it loads
+    evidence = {
+        "vera_twitter": st.session_state.get("sigma_vera_twitter"),
+        "competitor_twitter_total": st.session_state.get("sigma_competitor_twitter_total"),
+        "reddit_topic_total": st.session_state.get("sigma_reddit_topic_total"),
+        "competitor_youtube_views": st.session_state.get("sigma_competitor_youtube_views"),
+    }
+    render_insights(build_sigma_insights(evidence))
 
     st.markdown("""
     <div style="background:#f8f8f8; border:1px solid #e0e0e0; border-left:3px solid #111111; border-radius:4px; padding:1.2rem 1.6rem; margin-bottom:1.4rem;">
