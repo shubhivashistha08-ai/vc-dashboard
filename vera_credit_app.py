@@ -241,8 +241,8 @@ SIGMA_OPPORTUNITIES = [
     },
     {
         "number": "03",
-        "evidence": "YouTube searches for \"vera credit card\" return competitor content — 50k–500k view videos. Vera has zero dedicated coverage.",
-        "gap": "No content or SEO strategy. Petal, Apple Card, and Upgrade already own the search and social discovery.",
+        "evidence": "YouTube searches for \"vera credit card\" return competitor content — Petal, Apple Card, and Upgrade reviews with tens to hundreds of thousands of views. Vera has zero dedicated coverage.",
+        "gap": "No content or SEO strategy. Competitors already own search and social discovery for the exact keywords Vera needs.",
         "sigma_solution": "Content opportunity model: keyword and topic gap analysis against competitors. Identify the search terms and Reddit threads Vera should own.",
         "sigma_service": "AI Strategy + Predictive Analytics",
     },
@@ -262,9 +262,9 @@ SIGMA_OPPORTUNITIES = [
     },
     {
         "number": "06",
-        "evidence": "Google Trends: zero. iOS App Store: not listed. Wayback crawls: near zero. TikTok, YouTube, Reddit: all at baseline.",
+        "evidence": "Google Trends: zero search interest. iOS App Store: not listed. TikTok: no organic hashtag presence. YouTube and Reddit: all at baseline. All confirmed live in this dashboard.",
         "gap": "No early-warning system. Growth — or competitive threat — will be invisible until it's too late to act.",
-        "sigma_solution": "Weekly growth signal tracker: Trends alerts, Reddit velocity, App Store reviews, TikTok hashtag crawl, Wayback frequency, Google News — one automated report every Monday.",
+        "sigma_solution": "Weekly growth signal tracker: Trends alerts, Reddit mention velocity, App Store review monitoring, TikTok hashtag crawl, Google News — one automated report every Monday.",
         "sigma_service": "BI & Decision Dashboards + Data Engineering",
     },
 ]
